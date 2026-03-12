@@ -67,7 +67,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.ipos.ipossa/com.ipos.sa.LoginWindow</mainClass>
+                            <mainClass>com.ipos.ipossa/ipos.sa.LoginWindow</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

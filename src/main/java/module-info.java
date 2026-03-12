@@ -4,6 +4,6 @@ module com.ipos.sa {
     requires java.desktop;
 
 
-    opens com.ipos.sa to javafx.fxml;
-    exports com.ipos.sa;
+    opens ipos.sa to javafx.fxml;
+    exports ipos.sa;
 }

@@ -1,4 +1,4 @@
-package com.ipos.sa;
+package ipos.sa;
 
 import javafx.application.Application;
 
