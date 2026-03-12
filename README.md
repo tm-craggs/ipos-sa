@@ -2,8 +2,6 @@
 
 This is the repository for **Group 31A**. This repository stores **exclusively code**. To access other resources such as the Team Binder or Team Drive, see the **Resources** section below.
 
-Each folder refers to a package laid out in the **Project Brief**. Each programmer has been assigned a package: **please only work within your assigned folder.**
-
 <br>
 
 ## Resources
@@ -13,6 +11,45 @@ Each folder refers to a package laid out in the **Project Brief**. Each programm
 * **Project Brief**: [Link Here](https://moodle4.city.ac.uk/mod/resource/view.php?id=1188148)
 
 <br>
+
+## Project Structure
+
+Here is a quick overview of the project file structure:
+
+`pom.xml`
+- This is a Maven file. This file defines the dependencies of this project `sqlite, JavaFX`
+- IntelliJ will automatically read this file, and install all the dependencies you need for your platform. 
+- Don't touch this file unless you are adding more dependencies
+
+`mvnw`, `mvnw.cmd` and `.mvn`
+- These are the Maven wrappers, needed for Maven to work. If you don't have Maven installed, run these scripts.
+
+`.gitattributes`
+- This file tells Git about how to handle differences between Windows and Mac/Linux
+
+`.gitignore`
+- Tells Git which files to ignore, IDE and OS folders should be included
+
+`src`
+- This is the folder for all our Java source code
+
+#### Inside `src`
+
+`java`
+- This is the directory that contains our Java packages
+- The IPOS subsystems `ACC`, `CAT`, `ORD` and `RPT` are contained here as packages. Work within these
+- `ipos.sa` is the main system package, this contains the entry point for the code, which has
+  - Login screen
+  - Subsystem selection menu
+- `db` this is the package that interfaces with the database, use the methods from db when making an SQL query
+- **IMPORTANT:** This is the only place for SQL queries, don't use them anywhere else
+
+`resources`
+- This directory **must mirror** the java package structure.
+- Inside of these directories, you can put resources that that package needs
+- In JavaFX, you write the structure for the window in FXML. These files should be stored here
+
+**Example:** FXML files for IPOS-RPT should be stored in `resources/rpt`
 
 ## Roles
 * **Project Manager:** Tom
