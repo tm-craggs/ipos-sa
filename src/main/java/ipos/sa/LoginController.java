@@ -1,5 +1,6 @@
 package ipos.sa;
 
+import db.DatabaseManager;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -22,11 +23,13 @@ public class LoginController {
 
         String user = userField.getText();
         String pass = passwordField.getText();
+        String accountType = DatabaseManager.verifyUser(user, pass);
 
-        if (user.equals("admin") && pass.equals("1234")) {
+        if (accountType != null) {
             statusLabel.setText("Login Successful!");
             statusLabel.setTextFill(Color.GREEN);
-            // Here is where you'd trigger the "Report Generation" window
+            UserSession.login(user, accountType);
+
         } else {
             statusLabel.setText("Invalid credentials.");
             statusLabel.setTextFill(Color.RED);
