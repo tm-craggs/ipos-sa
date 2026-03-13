@@ -6,7 +6,9 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.animation.TranslateTransition;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+
 
 public class LoginController {
 
@@ -26,20 +28,17 @@ public class LoginController {
         String accountType = DatabaseManager.verifyUser(user, pass);
 
         if (accountType != null) {
-            statusLabel.setText("Login Successful!");
-            statusLabel.setTextFill(Color.GREEN);
             UserSession.login(user, accountType);
-
+            closeWindow();
         } else {
             statusLabel.setText("Invalid credentials.");
             statusLabel.setTextFill(Color.RED);
 
             // shake status label on invalid login attempt to provide visual feedback
             shakeNode(statusLabel);
+            loginButton.setDisable(false);
         }
 
-        // unlock button
-        loginButton.setDisable(false);
     }
 
     private void shakeNode(Node node) {
@@ -49,6 +48,13 @@ public class LoginController {
         tt.setCycleCount(4);
         tt.setAutoReverse(true);
         tt.play();
+    }
+
+    private void closeWindow() {
+
+        Stage stage = (Stage) loginButton.getScene().getWindow();
+        stage.close();
+
     }
 
 }
