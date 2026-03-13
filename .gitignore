@@ -43,3 +43,6 @@ ehthumbs_vista.db
 *.tmp
 *.bak
 *.sav
+
+### DB ###
+*.db
