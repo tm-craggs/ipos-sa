@@ -54,8 +54,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>24</source>
-                    <target>24</target>
+                    <release>21</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -67,7 +66,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.ipos.ipossa/ipos.sa.LoginWindow</mainClass>
+                            <mainClass>ipos.sa/ipos.sa.Launcher</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

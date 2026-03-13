@@ -14,6 +14,8 @@ This is the repository for **Group 31A**. This repository stores **exclusively c
 
 ## Project Structure
 
+This Project uses **Java 21**, make sure you have this version of the JDK installed
+
 Here is a quick overview of the project file structure:
 
 `pom.xml`
