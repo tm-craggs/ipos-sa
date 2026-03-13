@@ -39,7 +39,7 @@
         </PasswordField>
     </VBox>
 
-    <Button fx:id="loginButton" onAction="#handleLogin" prefHeight="40.0" prefWidth="100.0" text="Login">
+    <Button fx:id="loginButton" onAction="#handleLogin" defaultButton="true" prefHeight="40.0" prefWidth="100.0" text="Login">
         <font>
             <Font name="Tahoma Bold" size="14.0" />
         </font>
