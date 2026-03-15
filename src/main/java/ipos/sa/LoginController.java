@@ -1,13 +1,19 @@
 package ipos.sa;
 
 import db.DatabaseManager;
+import javafx.application.Application;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.animation.TranslateTransition;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.IOException;
 
 
 public class LoginController {
@@ -29,6 +35,7 @@ public class LoginController {
 
         if (accountType != null) {
             UserSession.login(user, accountType);
+            openMainMenu();
             closeWindow();
         } else {
             statusLabel.setText("Invalid credentials.");
@@ -54,6 +61,23 @@ public class LoginController {
 
         Stage stage = (Stage) loginButton.getScene().getWindow();
         stage.close();
+
+    }
+
+    private void openMainMenu(){
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("main-menu.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("IPOS Main Menu");
+
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

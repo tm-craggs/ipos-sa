@@ -25,7 +25,10 @@ public class UserSession {
         }
     }
 
+    public static UserSession getInstance(){return instance;}
+
     public static void logout() {
+
         instance = null;
     }
 
