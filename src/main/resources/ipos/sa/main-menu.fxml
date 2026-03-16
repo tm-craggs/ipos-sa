@@ -41,6 +41,7 @@
     </Label>
 
     <VBox alignment="CENTER" spacing="15.0">
+
         <padding><Insets bottom="40.0"/></padding>
         <Button fx:id="accButton" visible="false" managed="false" mnemonicParsing="false" onAction="#handleAcc" prefHeight="40.0" prefWidth="200.0" text="IPOS-ACC">
             <font>

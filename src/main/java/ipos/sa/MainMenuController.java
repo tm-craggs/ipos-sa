@@ -2,10 +2,15 @@ package ipos.sa;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 
 public class MainMenuController {
@@ -23,8 +28,6 @@ public class MainMenuController {
             loggedInUserLabel.setText(name);
 
             applyPermissions(UserSession.getInstance().getType());
-
-
 
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -70,11 +73,23 @@ public class MainMenuController {
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
+            UserSession.logout();
             closeWindow();
             System.out.println("Logging out...");
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login-window.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("IPOS");
+
+            stage.setScene(new Scene(root));
+            stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     @FXML
