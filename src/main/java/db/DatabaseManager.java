@@ -40,6 +40,20 @@ public class DatabaseManager {
                 INSERT OR IGNORE INTO users (username, password, type)
                 VALUES ('director', 'director', 'DIRECTOR')
             """);
+
+            // adding a database for table for ipos-sa-cat
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS catalogue (
+                    item_id TEXT PRIMARY KEY,
+                    description TEXT NOT NULL,
+                    package_type TEXT,
+                    unit TEXT,
+                    units_per_pack INTEGER,
+                    package_cost REAL,
+                    availability INTEGER,
+                    stock_limit INTEGER
+                );
+            """);
         }
     }
 

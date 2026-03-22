@@ -6,5 +6,6 @@ module ipos.sa {
 
 
     opens ipos.sa to javafx.fxml;
+    opens cat to javafx.fxml;
     exports ipos.sa;
 }
