@@ -1,5 +1,12 @@
 package rpt;
 
+import db.DatabaseManager;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class ReportManager {
 
     // generates report of all invoices within a given period
@@ -10,9 +17,40 @@ public class ReportManager {
         report.append("From: ").append(startDate)
               .append(" To: ").append(endDate).append("\n\n");
 
-        // placeholder data (replace with database later)
-        report.append("Invoice ID: INV001 | Merchant: M001 | Amount: 100\n");
-        report.append("Invoice ID: INV002 | Merchant: M002 | Amount: 200\n");
+        String sql = """
+            SELECT invoice_id, merchant_id, amount, invoice_date, payment_status
+            FROM invoices
+            WHERE invoice_date BETWEEN ? AND ?
+            ORDER BY invoice_date
+        """;
+
+        try {
+            Connection conn = DatabaseManager.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, startDate);
+            pstmt.setString(2, endDate);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            boolean hasResults = false;
+
+            while (rs.next()) {
+                hasResults = true;
+                report.append("Invoice ID: ").append(rs.getString("invoice_id"))
+                      .append(" | Merchant: ").append(rs.getString("merchant_id"))
+                      .append(" | Amount: ").append(rs.getDouble("amount"))
+                      .append(" | Date: ").append(rs.getString("invoice_date"))
+                      .append(" | Payment: ").append(rs.getString("payment_status"))
+                      .append("\n");
+            }
+
+            if (!hasResults) {
+                report.append("No invoices found for this period.\n");
+            }
+
+        } catch (SQLException e) {
+            report.append("Error generating report: ").append(e.getMessage());
+        }
 
         return report.toString();
     }
@@ -26,9 +64,40 @@ public class ReportManager {
         report.append("From: ").append(startDate)
               .append(" To: ").append(endDate).append("\n\n");
 
-        // placeholder data
-        report.append("Invoice ID: INV010 | Amount: 150\n");
-        report.append("Invoice ID: INV011 | Amount: 300\n");
+        String sql = """
+            SELECT invoice_id, amount, invoice_date, payment_status
+            FROM invoices
+            WHERE merchant_id = ? AND invoice_date BETWEEN ? AND ?
+            ORDER BY invoice_date
+        """;
+
+        try {
+            Connection conn = DatabaseManager.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, merchantId);
+            pstmt.setString(2, startDate);
+            pstmt.setString(3, endDate);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            boolean hasResults = false;
+
+            while (rs.next()) {
+                hasResults = true;
+                report.append("Invoice ID: ").append(rs.getString("invoice_id"))
+                      .append(" | Amount: ").append(rs.getDouble("amount"))
+                      .append(" | Date: ").append(rs.getString("invoice_date"))
+                      .append(" | Payment: ").append(rs.getString("payment_status"))
+                      .append("\n");
+            }
+
+            if (!hasResults) {
+                report.append("No invoices found for this merchant.\n");
+            }
+
+        } catch (SQLException e) {
+            report.append("Error generating report: ").append(e.getMessage());
+        }
 
         return report.toString();
     }

@@ -40,6 +40,35 @@ public class DatabaseManager {
                 INSERT OR IGNORE INTO users (username, password, type)
                 VALUES ('director', 'director', 'DIRECTOR')
             """);
+
+            // adding database tables for ipos-sa-rpt
+st.execute("""
+    CREATE TABLE IF NOT EXISTS invoices (
+        invoice_id TEXT PRIMARY KEY,
+        merchant_id TEXT NOT NULL,
+        amount REAL NOT NULL,
+        invoice_date TEXT NOT NULL,
+        payment_status TEXT
+    );
+""");
+
+st.execute("""
+    CREATE TABLE IF NOT EXISTS orders (
+        order_id TEXT PRIMARY KEY,
+        merchant_id TEXT NOT NULL,
+        order_date TEXT NOT NULL,
+        order_value REAL NOT NULL,
+        dispatch_date TEXT,
+        payment_status TEXT
+    );
+""");
+
+st.execute("""
+    INSERT OR IGNORE INTO invoices (invoice_id, merchant_id, amount, invoice_date, payment_status)
+    VALUES 
+    ('INV001', 'M001', 100, '2026-01-01', 'PAID'),
+    ('INV002', 'M002', 200, '2026-01-05', 'PENDING');
+""");
         }
     }
 
@@ -57,5 +86,8 @@ public class DatabaseManager {
 
     public static void main(String[] args) {
         connect();
+    }
+    public static Connection getConnection() {
+        return conn;
     }
 }
