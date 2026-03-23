@@ -7,4 +7,8 @@ module ipos.sa {
 
     opens ipos.sa to javafx.fxml;
     exports ipos.sa;
+
+    opens acc to javafx.fxml;
+    exports acc;
+
 }
