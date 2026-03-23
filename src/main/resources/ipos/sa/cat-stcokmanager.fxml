@@ -6,25 +6,27 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="698.0" prefWidth="994.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.CatalougeManager">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="698.0" prefWidth="994.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.CatalougeManager">
     <top>
         <VBox prefHeight="106.0" prefWidth="994.0" BorderPane.alignment="CENTER">
             <children>
                 <HBox prefHeight="37.0" prefWidth="600.0">
                     <children>
-                        <Button fx:id="addItemButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Add item"/>
+                        <Button fx:id="addItemButton" mnemonicParsing="false" onAction="#handleAddItem" prefHeight="25.0" prefWidth="80.0" text="Add item" />
                         <Separator prefHeight="0.0" prefWidth="44.0" />
-                        <Button fx:id="editItemButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="79.0" text="Edit item"/>
+                        <Button fx:id="editItemButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="79.0" text="Edit item" />
                         <Separator prefHeight="0.0" prefWidth="44.0" />
-                        <Button fx:id="deleteItemButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="101.0" text="Delete item"/>
+                        <Button fx:id="deleteItemButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="101.0" text="Delete item" />
                         <Separator prefHeight="6.0" prefWidth="351.0" />
-                        <Button fx:id="addStockButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="Add stock"/>
+                        <Button fx:id="addStockButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="Add stock" />
                         <Separator prefHeight="0.0" prefWidth="44.0" />
-                        <Button fx:id="lowStockReportButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="128.0" text="Low Stock Report"/>
+                        <Button fx:id="lowStockReportButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="128.0" text="Low Stock Report" />
                     </children>
                 </HBox>
                 <TextField fx:id="searchField" prefHeight="30.0" prefWidth="600.0" promptText="Search by item Id, description..." />
@@ -40,21 +42,45 @@
                 <Label fx:id="lowStockLabel" prefHeight="36.0" prefWidth="81.0" text="Low stock:" />
                 <Separator prefHeight="0.0" prefWidth="44.0" />
                 <Label fx:id="selectedLabel" prefHeight="49.0" prefWidth="198.0" text="Selected:" />
+                <Separator opacity="0.0" prefHeight="14.0" prefWidth="323.0" />
+                <Button fx:id="mainMenuButton" mnemonicParsing="false" onAction="#handleMainMenu" prefHeight="32.0" prefWidth="87.0" style="-fx-background-color: #FF0011; -fx-text-fill: white;" text="Main Menu">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Button>
             </children>
         </HBox>
     </bottom>
     <center>
         <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <columns>
-                <TableColumn fx:id="colId" prefWidth="71.0" text="ID" />
-                <TableColumn fx:id="colDesc" prefWidth="79.0" text="Desc." />
-                <TableColumn fx:id="colPackageType" prefWidth="103.0" text="Package Type" />
-                <TableColumn fx:id="colUnit" prefWidth="89.0" text="Unit" />
-                <TableColumn fx:id="colUnitsPerPack" prefWidth="117.0" text="Units/Pack" />
-                <TableColumn fx:id="colPackageCost" prefWidth="102.0" text="Package Cost" />
-                <TableColumn fx:id="colAvailability" prefWidth="138.0" text="Availability" />
-                <TableColumn fx:id="colStockLimit" prefWidth="142.0" text="Stock Limit" />
-                <TableColumn fx:id="colStatus" prefWidth="152.0" text="Status" />
+                <TableColumn fx:id="colId" prefWidth="71.0" text="ID">
+                    <cellValueFactory><PropertyValueFactory property="itemId" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="colDesc" prefWidth="79.0" text="Desc.">
+                    <cellValueFactory><PropertyValueFactory property="description" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="colPackageType" prefWidth="103.0" text="Package Type">
+                    <cellValueFactory><PropertyValueFactory property="packageType" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="colUnit" prefWidth="89.0" text="Unit">
+                    <cellValueFactory><PropertyValueFactory property="unit" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="colUnitsPerPack" prefWidth="117.0" text="Units/Pack">
+                    <cellValueFactory><PropertyValueFactory property="unitsPerPack" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="colPackageCost" prefWidth="102.0" text="Package Cost">
+                    <cellValueFactory><PropertyValueFactory property="packageCost" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="colAvailability" prefWidth="138.0" text="Availability">
+                    <cellValueFactory><PropertyValueFactory property="availability" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="colStockLimit" prefWidth="142.0" text="Stock Limit">
+                    <cellValueFactory><PropertyValueFactory property="stockLimit" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="colStatus" prefWidth="152.0" text="Status">
+                    <cellValueFactory><PropertyValueFactory property="status" /></cellValueFactory>
+                </TableColumn>
             </columns>
         </TableView>
     </center>

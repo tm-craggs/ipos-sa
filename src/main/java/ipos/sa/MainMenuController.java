@@ -107,6 +107,7 @@ public class MainMenuController {
             stage.setTitle("Catalogue");
             stage.setScene(new Scene(root));
             stage.show();
+            closeWindow();
         } catch (Exception e) {e.printStackTrace();}
     }
 

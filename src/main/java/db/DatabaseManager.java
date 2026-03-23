@@ -1,9 +1,10 @@
 package db;
 
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Connection;
+import cat.CatalogueItem;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseManager {
 
@@ -44,14 +45,15 @@ public class DatabaseManager {
             // adding a database for table for ipos-sa-cat
             st.execute("""
                 CREATE TABLE IF NOT EXISTS catalogue (
-                    item_id TEXT PRIMARY KEY,
+                    item_id INTEGER PRIMARY KEY,
                     description TEXT NOT NULL,
                     package_type TEXT,
                     unit TEXT,
                     units_per_pack INTEGER,
                     package_cost REAL,
                     availability INTEGER,
-                    stock_limit INTEGER
+                    stock_limit INTEGER,
+                    status TEXT
                 );
             """);
         }
@@ -66,6 +68,52 @@ public class DatabaseManager {
             return rs.next() ? rs.getString("type") : null;
         } catch (SQLException e) {
             return null;
+        }
+    }
+
+    public static List<CatalogueItem> getCatalogueItems() {
+        List<CatalogueItem> items = new ArrayList<>();
+        String sql = "SELECT * FROM catalogue";
+        try (var stmt = conn.createStatement();
+             var rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                items.add(new CatalogueItem(
+                        rs.getInt("item_id"),
+                        rs.getString("description"),
+                        rs.getString("package_type"),
+                        rs.getString("unit"),
+                        rs.getInt("units_per_pack"),
+                        rs.getDouble("package_cost"),
+                        rs.getInt("availability"),
+                        rs.getInt("stock_limit")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to load catalogue: " + e.getMessage());
+        }
+        return items;
+    }
+
+
+    public static void addCatalogueItem(int itemId,String Description, String packageType, String unit, int unitsperPack, double packageCost,int availability, int stockLimit) {
+        String statusValue = availability < stockLimit ? "Low stock" : "OK";
+        String sql ="""
+            INSERT INTO catalogue (item_id, description, package_type, unit, units_per_pack, package_cost, availability, stock_limit, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, itemId);
+            pstmt.setString(2, Description);
+            pstmt.setString(3, packageType);
+            pstmt.setString(4, unit);
+            pstmt.setInt(5, unitsperPack);
+            pstmt.setDouble(6, packageCost);
+            pstmt.setInt(7, availability);
+            pstmt.setInt(8, stockLimit);
+            pstmt.executeUpdate();
+            System.out.println("Item added to catalogue: " + itemId);
+        } catch (SQLException e) {
+            System.out.println("Failed to add item: " + e.getMessage());
         }
     }
 
