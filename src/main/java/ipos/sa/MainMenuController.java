@@ -110,10 +110,21 @@ public class MainMenuController {
     @FXML
     private void handleRpt() {
         System.out.println("Opening IPOS-RPT...");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos/sa/report-window.fxml"));
+            Parent root = loader.load();
+    
+            Stage stage = new Stage();
+            stage.setTitle("Reports");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
     private void closeWindow() {
         Stage stage = (Stage) loggedInUserLabel.getScene().getWindow();
         stage.close();
     }
+    
 }

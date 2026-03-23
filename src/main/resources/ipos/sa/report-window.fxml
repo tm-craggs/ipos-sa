@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" alignment="TOP_CENTER" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="rpt.ReportWindow" prefWidth="700" prefHeight="500">
+
+    <Label text="IPOS Reports" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Report Type:" />
+        <ChoiceBox fx:id="reportTypeChoice" prefWidth="220" />
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Start Date:" />
+        <TextField fx:id="startDateField" promptText="YYYY-MM-DD" />
+        <Label text="End Date:" />
+        <TextField fx:id="endDateField" promptText="YYYY-MM-DD" />
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Merchant ID:" />
+        <TextField fx:id="merchantIdField" promptText="Optional for some reports" />
+    </HBox>
+
+    <Button text="Generate Report" onAction="#handleGenerateReport" />
+
+    <TextArea fx:id="reportOutputArea" prefHeight="300" wrapText="true" editable="false" />
+</VBox>
