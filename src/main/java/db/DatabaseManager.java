@@ -33,7 +33,9 @@ public class DatabaseManager {
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     username TEXT UNIQUE NOT NULL,
                     password TEXT NOT NULL,
-                    type TEXT NULL
+                    type TEXT NULL,
+                    credit_limit REAL,
+                    discount_plan TEXT
                 );
             """);
             st.execute("""
@@ -52,6 +54,38 @@ public class DatabaseManager {
             return rs.next() ? rs.getString("type") : null;
         } catch (SQLException e) {
             return null;
+        }
+    }
+
+    public static void addUser(String type, String username, String password){
+        String sql = "INSERT INTO users (type, username, password) VALUES (?, ?, ?)";
+        try (var pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, type);
+            pstmt.setString(2, username);
+            pstmt.setString(3, password);
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addUser(String type, String username, String password, float credit_limit, String discount_plan){
+        String sql = "INSERT INTO users (type, username, password, credit_limit, discount_plan) VALUES (?, ?, ?, ?, ?)";
+        try (var pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, type);
+            pstmt.setString(2, username);
+            pstmt.setString(3, password);
+            pstmt.setFloat(4, credit_limit);
+            pstmt.setString(5, discount_plan);
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

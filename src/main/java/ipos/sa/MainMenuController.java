@@ -85,8 +85,11 @@ public class MainMenuController {
     }
 
     @FXML
-    private void handleAcc() {
+    private void handleAcc(ActionEvent event) {
+
         System.out.println("Opening IPOS-ACC...");
+        SceneSwitcher.switchScene(event, "/acc/acc-window.fxml", "IPOS-ACC");
+
     }
 
     @FXML
