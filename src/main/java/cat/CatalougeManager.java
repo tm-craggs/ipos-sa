@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,30 +21,44 @@ public class CatalougeManager {
     @FXML private TextField searchField;
     @FXML private Label warningLabel;
     @FXML private Label totalItemsLabel;
-    @FXML private Label lowStockLabel;
     @FXML private Label selectedLabel;
     @FXML private Button editItemButton;
     @FXML private Button deleteItemButton;
+    @FXML private Button addStockButton;
 
     @FXML
     public void initialize() {
         searchField.textProperty().addListener((obs, old, newVal) -> filterTable(newVal));
         loadCatalogue();
 
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        deleteItemButton.setDisable(true);
         editItemButton.setDisable(true);
+        addStockButton.setDisable(true);
 
         // selected item
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
             if (newItem != null) {
                 selectedLabel.setText("Selected: " + newItem.getDescription());
                 editItemButton.setDisable(false);
+                deleteItemButton.setDisable(false);
+                addStockButton.setDisable(false);
             } else {
                 selectedLabel.setText("Selected: None");
                 editItemButton.setDisable(true);
+                deleteItemButton.setDisable(true);
+                addStockButton.setDisable(true);
             }
         });
 
 
+    }
+
+    private void unsigned(TextField i) {
+        i.textProperty().addListener((obs, old, newVal) -> {
+            if(newVal.contains("-")) {i.setText(newVal.replace("-",""));}
+        });
     }
 
     private void loadCatalogue() {
@@ -86,6 +101,37 @@ public class CatalougeManager {
     }
 
     @FXML
+    private void handleAddStock() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Add Stock");
+        ButtonType confirmButton = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(confirmButton, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        TextField stockField = new TextField();
+        unsigned(stockField);
+        grid.add(new Label("Quantity to add:"), 0, 0);
+        grid.add(stockField, 1, 0);
+
+        dialog.getDialogPane().setContent(grid);
+
+        CatalogueItem selected = tableView.getSelectionModel().getSelectedItem();
+        int id = selected.getItemId();
+        int previous = selected.getAvailability();
+
+        dialog.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == confirmButton) {
+                int newstock = previous + Integer.parseInt(stockField.getText().trim());
+                DatabaseManager.updateAvailability(id, newstock);
+                loadCatalogue();
+            }
+        });
+    }
+
+    @FXML
     private void handleEditItem() {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Edit Item");
@@ -104,6 +150,11 @@ public class CatalougeManager {
         TextField packageCost = new TextField();
         TextField availability = new TextField();
         TextField stockLimit = new TextField();
+
+        unsigned(unitsPerPack);
+        unsigned(packageCost);
+        unsigned(availability);
+        unsigned(stockLimit);
 
         grid.add(new Label("Description:"), 0, 1);   grid.add(description, 1, 1);
         grid.add(new Label("Package Type:"), 0, 2);  grid.add(packageType, 1, 2);
@@ -129,13 +180,13 @@ public class CatalougeManager {
 
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType == confirmButton) {
-                DatabaseManager.updateDescription(id, description.getText());
-                DatabaseManager.updatePackageType(id, packageType.getText());
-                DatabaseManager.updateUnit(id, unit.getText());
-                DatabaseManager.updateUnitsPerPack(id, Integer.parseInt(unitsPerPack.getText()));
-                DatabaseManager.updatePackageCost(id, Double.parseDouble(packageCost.getText()));
-                DatabaseManager.updateAvailability(id, Integer.parseInt(availability.getText()));
-                DatabaseManager.updateStockLimit(id, Integer.parseInt(stockLimit.getText()));
+                DatabaseManager.updateDescription(id, description.getText().trim());
+                DatabaseManager.updatePackageType(id, packageType.getText().trim());
+                DatabaseManager.updateUnit(id, unit.getText().trim());
+                DatabaseManager.updateUnitsPerPack(id, Integer.parseInt(unitsPerPack.getText().trim()));
+                DatabaseManager.updatePackageCost(id, Double.parseDouble(packageCost.getText().trim()));
+                DatabaseManager.updateAvailability(id, Integer.parseInt(availability.getText().trim()));
+                DatabaseManager.updateStockLimit(id, Integer.parseInt(stockLimit.getText().trim()));
                 loadCatalogue();
             }
         });
@@ -163,6 +214,12 @@ public class CatalougeManager {
         TextField availability = new TextField();
         TextField stockLimit = new TextField();
 
+        unsigned(itemId);
+        unsigned(unitsPerPack);
+        unsigned(packageCost);
+        unsigned(availability);
+        unsigned(stockLimit);
+
         grid.add(new Label("Item ID:"), 0, 0);       grid.add(itemId, 1, 0);
         grid.add(new Label("Description:"), 0, 1);   grid.add(description, 1, 1);
         grid.add(new Label("Package Type:"), 0, 2);  grid.add(packageType, 1, 2);
@@ -186,16 +243,16 @@ public class CatalougeManager {
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType == addButton) {
                 try {
-                    int avail = Integer.parseInt(availability.getText());
-                    int stock = Integer.parseInt(stockLimit.getText());
+                    int avail = Integer.parseInt(availability.getText().trim());
+                    int stock = Integer.parseInt(stockLimit.getText().trim());
 
                     DatabaseManager.addCatalogueItem(
-                            Integer.parseInt(itemId.getText()),
-                            description.getText(),
-                            packageType.getText(),
-                            unit.getText(),
-                            Integer.parseInt(unitsPerPack.getText()),
-                            Double.parseDouble(packageCost.getText()),
+                            Integer.parseInt(itemId.getText().trim()),
+                            description.getText().trim(),
+                            packageType.getText().trim(),
+                            unit.getText().trim(),
+                            Integer.parseInt(unitsPerPack.getText().trim()),
+                            Double.parseDouble(packageCost.getText().trim()),
                             avail,
                             stock
                     );
@@ -209,6 +266,9 @@ public class CatalougeManager {
             }
         });
     }
+
+    @FXML
+    private void handleLowStock() {}
 
     @FXML
     private void handleMainMenu() {

@@ -12,20 +12,24 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.geometry.Insets?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="698.0" prefWidth="994.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cat.CatalougeManager">
     <top>
         <VBox prefHeight="106.0" prefWidth="994.0" BorderPane.alignment="CENTER">
             <children>
-                <HBox prefHeight="37.0" prefWidth="600.0">
+                <HBox spacing="5" prefHeight="37.0" prefWidth="600.0" >
+                    <padding>
+                        <Insets top="5" left="5" right="5"/>
+                    </padding>
                     <children>
-                        <Button fx:id="addItemButton" mnemonicParsing="false" onAction="#handleAddItem" prefHeight="25.0" prefWidth="80.0" text="Add item" />
-                        <Separator prefHeight="0.0" prefWidth="44.0" />
+                        <Button fx:id="addItemButton" mnemonicParsing="false" onAction="#handleAddItem" prefHeight="25.0" prefWidth="80.0" text="Add item"/>
+                        <Separator prefHeight="0.0" prefWidth="44.0" opacity="0" />
                         <Button fx:id="editItemButton" mnemonicParsing="false" onAction="#handleEditItem" prefHeight="25.0" prefWidth="79.0" text="Edit item" />
-                        <Separator prefHeight="0.0" prefWidth="44.0" />
+                        <Separator prefHeight="0.0" prefWidth="44.0" opacity="0" />
                         <Button fx:id="deleteItemButton" mnemonicParsing="false" onAction="#handleDeleteItem" prefHeight="25.0" prefWidth="101.0" text="Delete item" />
-                        <Separator prefHeight="6.0" prefWidth="351.0" />
-                        <Button fx:id="addStockButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="Add stock" />
-                        <Separator prefHeight="0.0" prefWidth="44.0" />
+                        <Separator prefHeight="6.0" prefWidth="351.0" opacity="0" />
+                        <Button fx:id="addStockButton" mnemonicParsing="false" onAction="#handleAddStock" prefHeight="25.0" prefWidth="88.0" text="Add stock" />
+                        <Separator prefHeight="0.0" prefWidth="44.0" opacity="0" />
                         <Button fx:id="lowStockReportButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="128.0" text="Low Stock Report" />
                     </children>
                 </HBox>
@@ -36,14 +40,16 @@
     </top>
     <bottom>
         <HBox prefHeight="35.0" prefWidth="628.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="5" left="5" right="5" bottom="5"/>
+            </padding>
             <children>
+
                 <Label fx:id="totalItemsLabel" prefHeight="36.0" prefWidth="102.0" text="Total items:" />
-                <Separator prefHeight="0.0" prefWidth="126.0" />
-                <Label fx:id="lowStockLabel" prefHeight="36.0" prefWidth="81.0" text="Low stock:" />
-                <Separator prefHeight="0.0" prefWidth="44.0" />
+                <Separator prefHeight="0.0" prefWidth="126.0" opacity="0" />
                 <Label fx:id="selectedLabel" prefHeight="49.0" prefWidth="198.0" text="Selected:" />
                 <Separator opacity="0.0" prefHeight="14.0" prefWidth="323.0" />
-                <Button fx:id="mainMenuButton" mnemonicParsing="false" onAction="#handleMainMenu" prefHeight="32.0" prefWidth="87.0" style="-fx-background-color: #FF0011; -fx-text-fill: white;" text="Main Menu">
+                <Button fx:id="mainMenuButton" mnemonicParsing="false" onAction="#handleMainMenu" prefHeight="32.0" prefWidth="87.0" style="-fx-background-color: rgba(134,6,6,0.89); -fx-text-fill: white;" text="Main Menu">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
@@ -52,7 +58,7 @@
         </HBox>
     </bottom>
     <center>
-        <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" >
             <columns>
                 <TableColumn fx:id="colId" prefWidth="71.0" text="ID">
                     <cellValueFactory><PropertyValueFactory property="itemId" /></cellValueFactory>

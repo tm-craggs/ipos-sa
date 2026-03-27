@@ -112,7 +112,6 @@ public class DatabaseManager {
             pstmt.setInt(8, stockLimit);
             pstmt.setString(9, statusValue);
             pstmt.executeUpdate();
-            System.out.println("Item added to catalogue: " + itemId);
         } catch (SQLException e) {
             System.out.println("Failed to add item: " + e.getMessage());
         }
