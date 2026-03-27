@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.GridPane;
@@ -20,11 +21,29 @@ public class CatalougeManager {
     @FXML private Label warningLabel;
     @FXML private Label totalItemsLabel;
     @FXML private Label lowStockLabel;
+    @FXML private Label selectedLabel;
+    @FXML private Button editItemButton;
+    @FXML private Button deleteItemButton;
 
     @FXML
     public void initialize() {
         searchField.textProperty().addListener((obs, old, newVal) -> filterTable(newVal));
         loadCatalogue();
+
+        editItemButton.setDisable(true);
+
+        // selected item
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
+            if (newItem != null) {
+                selectedLabel.setText("Selected: " + newItem.getDescription());
+                editItemButton.setDisable(false);
+            } else {
+                selectedLabel.setText("Selected: None");
+                editItemButton.setDisable(true);
+            }
+        });
+
+
     }
 
     private void loadCatalogue() {
@@ -35,7 +54,91 @@ public class CatalougeManager {
     }
 
     private void filterTable(String query) {
-        // filter tableview here
+        tableView.getItems().clear();
+        List<CatalogueItem> items = DatabaseManager.getCatalogueItems();
+
+        if(query == null || query.isEmpty()) {
+            tableView.getItems().addAll(items);
+        }
+        else {
+            String l = query.toLowerCase();
+            for(CatalogueItem item : items) {
+                if(item.getDescription().toLowerCase().contains(l)
+                        || String.valueOf(item.getItemId()).contains(l)
+                        || item.getPackageType().toLowerCase().contains(l)
+                        || item.getUnit().toLowerCase().contains(l)
+                ) {tableView.getItems().add(item);}
+            }
+        }
+        totalItemsLabel.setText("Total items: " + items.size());
+    }
+
+    @FXML
+    private void handleDeleteItem() {
+        CatalogueItem selected = tableView.getSelectionModel().getSelectedItem();
+        if(selected == null) {
+            warningLabel.setText("please select an item before deleting it");
+            return;
+        }
+        int id = selected.getItemId();
+        DatabaseManager.deleteCatalogueItem(id);
+        loadCatalogue();
+    }
+
+    @FXML
+    private void handleEditItem() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Edit Item");
+
+        ButtonType confirmButton = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(confirmButton, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        TextField description = new TextField();
+        TextField packageType = new TextField();
+        TextField unit = new TextField();
+        TextField unitsPerPack = new TextField();
+        TextField packageCost = new TextField();
+        TextField availability = new TextField();
+        TextField stockLimit = new TextField();
+
+        grid.add(new Label("Description:"), 0, 1);   grid.add(description, 1, 1);
+        grid.add(new Label("Package Type:"), 0, 2);  grid.add(packageType, 1, 2);
+        grid.add(new Label("Unit:"), 0, 3);          grid.add(unit, 1, 3);
+        grid.add(new Label("Units/Pack:"), 0, 4);    grid.add(unitsPerPack, 1, 4);
+        grid.add(new Label("Package Cost:"), 0, 5);  grid.add(packageCost, 1, 5);
+        grid.add(new Label("Availability:"), 0, 6);  grid.add(availability, 1, 6);
+        grid.add(new Label("Stock Limit:"), 0, 7);   grid.add(stockLimit, 1, 7);
+
+
+        dialog.getDialogPane().setContent(grid);
+
+        CatalogueItem selected = tableView.getSelectionModel().getSelectedItem();
+        int id = selected.getItemId();
+
+        description.setText(selected.getDescription());
+        packageType.setText(selected.getPackageType());
+        unit.setText(selected.getUnit());
+        unitsPerPack.setText(String.valueOf(selected.getUnitsPerPack()));
+        packageCost.setText(String.valueOf(selected.getPackageCost()));
+        availability.setText(String.valueOf(selected.getAvailability()));
+        stockLimit.setText(String.valueOf(selected.getStockLimit()));
+
+        dialog.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == confirmButton) {
+                DatabaseManager.updateDescription(id, description.getText());
+                DatabaseManager.updatePackageType(id, packageType.getText());
+                DatabaseManager.updateUnit(id, unit.getText());
+                DatabaseManager.updateUnitsPerPack(id, Integer.parseInt(unitsPerPack.getText()));
+                DatabaseManager.updatePackageCost(id, Double.parseDouble(packageCost.getText()));
+                DatabaseManager.updateAvailability(id, Integer.parseInt(availability.getText()));
+                DatabaseManager.updateStockLimit(id, Integer.parseInt(stockLimit.getText()));
+                loadCatalogue();
+            }
+        });
     }
 
     @FXML

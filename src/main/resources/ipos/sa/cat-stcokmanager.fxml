@@ -20,9 +20,9 @@
                     <children>
                         <Button fx:id="addItemButton" mnemonicParsing="false" onAction="#handleAddItem" prefHeight="25.0" prefWidth="80.0" text="Add item" />
                         <Separator prefHeight="0.0" prefWidth="44.0" />
-                        <Button fx:id="editItemButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="79.0" text="Edit item" />
+                        <Button fx:id="editItemButton" mnemonicParsing="false" onAction="#handleEditItem" prefHeight="25.0" prefWidth="79.0" text="Edit item" />
                         <Separator prefHeight="0.0" prefWidth="44.0" />
-                        <Button fx:id="deleteItemButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="101.0" text="Delete item" />
+                        <Button fx:id="deleteItemButton" mnemonicParsing="false" onAction="#handleDeleteItem" prefHeight="25.0" prefWidth="101.0" text="Delete item" />
                         <Separator prefHeight="6.0" prefWidth="351.0" />
                         <Button fx:id="addStockButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="Add stock" />
                         <Separator prefHeight="0.0" prefWidth="44.0" />

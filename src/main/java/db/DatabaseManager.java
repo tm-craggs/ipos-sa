@@ -110,10 +110,119 @@ public class DatabaseManager {
             pstmt.setDouble(6, packageCost);
             pstmt.setInt(7, availability);
             pstmt.setInt(8, stockLimit);
+            pstmt.setString(9, statusValue);
             pstmt.executeUpdate();
             System.out.println("Item added to catalogue: " + itemId);
         } catch (SQLException e) {
             System.out.println("Failed to add item: " + e.getMessage());
+        }
+    }
+
+    private static void updateStatus(int id) {
+        String sql = """
+            UPDATE catalogue SET status = CASE WHEN availability < stock_limit THEN 'Low stock' ELSE 'OK' END WHERE item_id = ?
+            """;
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to update status: " + e.getMessage());
+        }
+    }
+    public static void updateDescription(int id, String description) {
+        String sql = """
+                UPDATE catalogue SET description = ? WHERE item_id = ?
+                """;
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1,description);
+            pstmt.setInt(2,id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to update description: " + e.getMessage());
+        }
+    }
+    public static void updatePackageType(int id, String packageType) {
+        String sql = """ 
+               UPDATE catalogue SET package_type = ? WHERE item_id = ?
+                """;
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1,packageType);
+            pstmt.setInt(2,id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to update description: " + e.getMessage());
+        }
+    }
+    public static void updateUnit(int id, String unit) {
+        String sql = """ 
+               UPDATE catalogue SET unit = ? WHERE item_id = ?
+                """;
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1,unit);
+            pstmt.setInt(2,id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to update description: " + e.getMessage());
+        }
+    }
+    public static void updateUnitsPerPack(int id, int unitsPerPack) {
+        String sql = """ 
+               UPDATE catalogue SET units_per_pack = ? WHERE item_id = ?
+                """;
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1,unitsPerPack);
+            pstmt.setInt(2,id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to update description: " + e.getMessage());
+        }
+    }
+    public static void updatePackageCost(int id, double packageCost) {
+        String sql = """ 
+               UPDATE catalogue SET package_cost = ? WHERE item_id = ?
+                """;
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setDouble(1,packageCost);
+            pstmt.setInt(2,id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to update description: " + e.getMessage());
+        }
+    }
+    public static void updateAvailability(int id, int availability) {
+        String sql = """ 
+               UPDATE catalogue SET availability = ? WHERE item_id = ?
+                """;
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1,availability);
+            pstmt.setInt(2,id);
+            pstmt.executeUpdate();
+            updateStatus(id);
+        } catch (SQLException e) {
+            System.out.println("Failed to update description: " + e.getMessage());
+        }
+    }
+    public static void updateStockLimit(int id, int stockLimit) {
+        String sql = """ 
+               UPDATE catalogue SET stock_limit = ? WHERE item_id = ?
+                """;
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1,stockLimit);
+            pstmt.setInt(2,id);
+            pstmt.executeUpdate();
+            updateStatus(id);
+        } catch (SQLException e) {
+            System.out.println("Failed to update description: " + e.getMessage());
+        }
+    }
+    public static void deleteCatalogueItem(int id){
+        String sql = """
+                DELETE FROM catalogue WHERE item_id = ?""";
+        try (var pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1,id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to delete item: " + e.getMessage());
         }
     }
 
