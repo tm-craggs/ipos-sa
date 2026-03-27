@@ -105,34 +105,102 @@ public class ReportManager {
     // generates turnover report (goods sold + revenue)
     public String generateTurnoverReport(String startDate, String endDate) {
         StringBuilder report = new StringBuilder();
-
+    
         report.append("=== Turnover Report ===\n");
         report.append("From: ").append(startDate)
               .append(" To: ").append(endDate).append("\n\n");
-
-        // placeholder data
-        report.append("Total Goods Sold: 0\n");
-        report.append("Total Revenue: 0\n");
-
+    
+        String sql = """
+            SELECT COUNT(*) AS total_orders, SUM(order_value) AS total_revenue
+            FROM orders
+            WHERE order_date BETWEEN ? AND ?
+        """;
+    
+        try {
+            Connection conn = DatabaseManager.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, startDate);
+            pstmt.setString(2, endDate);
+    
+            ResultSet rs = pstmt.executeQuery();
+    
+            if (rs.next()) {
+                int totalOrders = rs.getInt("total_orders");
+                double totalRevenue = rs.getDouble("total_revenue");
+    
+                report.append("Total Orders: ").append(totalOrders).append("\n");
+                report.append("Total Revenue: ").append(totalRevenue).append("\n");
+            } else {
+                report.append("No data found.\n");
+            }
+    
+        } catch (SQLException e) {
+            report.append("Error generating report: ").append(e.getMessage());
+        }
+    
         return report.toString();
     }
 
-    // generates list of orders for a merchant
-    public String generateMerchantOrdersReport(String merchantId, String startDate, String endDate) {
-        StringBuilder report = new StringBuilder();
+   // generates list of orders for a merchant
+public String generateMerchantOrdersReport(String merchantId, String startDate, String endDate) {
+    StringBuilder report = new StringBuilder();
 
-        report.append("=== Merchant Orders Report ===\n");
-        report.append("Merchant: ").append(merchantId).append("\n");
-        report.append("From: ").append(startDate)
-              .append(" To: ").append(endDate).append("\n\n");
+    report.append("=== Merchant Orders Report ===\n");
+    report.append("Merchant: ").append(merchantId).append("\n");
+    report.append("From: ").append(startDate)
+          .append(" To: ").append(endDate).append("\n\n");
 
-        // placeholder data
-        report.append("Order ID: ORD001 | Date: 2026-01-01 | Value: 100 | Dispatch: 2026-01-02 | Paid\n");
-        report.append("Order ID: ORD002 | Date: 2026-01-05 | Value: 200 | Dispatch: 2026-01-06 | Pending\n");
-        report.append("\nTotal Orders Value: 300\n");
+    String sql = """
+        SELECT order_id, order_date, order_value, dispatch_date, payment_status
+        FROM orders
+        WHERE merchant_id = ? AND order_date BETWEEN ? AND ?
+        ORDER BY order_date
+    """;
 
-        return report.toString();
+    double totalValue = 0;
+
+    try {
+        Connection conn = DatabaseManager.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, merchantId);
+        pstmt.setString(2, startDate);
+        pstmt.setString(3, endDate);
+
+        ResultSet rs = pstmt.executeQuery();
+
+        boolean hasResults = false;
+
+        while (rs.next()) {
+            hasResults = true;
+
+            String orderId = rs.getString("order_id");
+            String orderDate = rs.getString("order_date");
+            double orderValue = rs.getDouble("order_value");
+            String dispatchDate = rs.getString("dispatch_date");
+            String paymentStatus = rs.getString("payment_status");
+
+            totalValue += orderValue;
+
+            report.append("Order ID: ").append(orderId)
+                  .append(" | Date: ").append(orderDate)
+                  .append(" | Value: ").append(orderValue)
+                  .append(" | Dispatch: ").append(dispatchDate)
+                  .append(" | ").append(paymentStatus)
+                  .append("\n");
+        }
+
+        if (!hasResults) {
+            report.append("No orders found for this merchant.\n");
+        } else {
+            report.append("\nTotal Orders Value: ").append(totalValue).append("\n");
+        }
+
+    } catch (SQLException e) {
+        report.append("Error generating report: ").append(e.getMessage());
     }
+
+    return report.toString();
+}
 
     // generates detailed activity report for a merchant
     public String generateMerchantActivityReport(String merchantId, String startDate, String endDate) {
@@ -149,18 +217,43 @@ public class ReportManager {
         return report.toString();
     }
 
-    // generates stock turnover report (sold vs received)
-    public String generateStockTurnoverReport(String startDate, String endDate) {
-        StringBuilder report = new StringBuilder();
 
-        report.append("=== Stock Turnover Report ===\n");
-        report.append("From: ").append(startDate)
-              .append(" To: ").append(endDate).append("\n\n");
+// generates stock turnover report (goods sold + revenue)
+public String generateStockTurnoverReport(String startDate, String endDate) {
+    StringBuilder report = new StringBuilder();
 
-        // placeholder data
-        report.append("Stock Sold: 0\n");
-        report.append("Stock Received: 0\n");
+    report.append("=== Stock Turnover Report ===\n");
+    report.append("From: ").append(startDate)
+          .append(" To: ").append(endDate).append("\n\n");
 
-        return report.toString();
+    String sql = """
+        SELECT COUNT(*) AS total_orders, SUM(order_value) AS total_revenue
+        FROM orders
+        WHERE order_date BETWEEN ? AND ?
+    """;
+
+    try {
+        Connection conn = DatabaseManager.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, startDate);
+        pstmt.setString(2, endDate);
+
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            int totalOrders = rs.getInt("total_orders");
+            double totalRevenue = rs.getDouble("total_revenue");
+
+            report.append("Total Orders (Goods Sold): ").append(totalOrders).append("\n");
+            report.append("Total Revenue: ").append(totalRevenue).append("\n");
+        } else {
+            report.append("No data found for this period.\n");
+        }
+
+    } catch (SQLException e) {
+        report.append("Error generating report: ").append(e.getMessage());
     }
+
+    return report.toString();
+}
 }

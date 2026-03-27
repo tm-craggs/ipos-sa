@@ -3,29 +3,49 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="10" alignment="TOP_CENTER" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="rpt.ReportWindow" prefWidth="700" prefHeight="500">
+<VBox spacing="15" alignment="TOP_CENTER" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="rpt.ReportWindow" prefWidth="700" prefHeight="500"
+      style="-fx-padding: 20;">
 
-    <Label text="IPOS Reports" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+    <!-- Title -->
+    <Label text="IPOS Reports"
+           style="-fx-font-size: 22px; -fx-font-weight: bold;" />
 
-    <HBox spacing="10" alignment="CENTER">
-        <Label text="Report Type:" />
-        <ChoiceBox fx:id="reportTypeChoice" prefWidth="220" />
-    </HBox>
+    <!-- Form Section -->
+    <VBox spacing="10" prefWidth="500">
 
-    <HBox spacing="10" alignment="CENTER">
-        <Label text="Start Date:" />
-        <TextField fx:id="startDateField" promptText="YYYY-MM-DD" />
-        <Label text="End Date:" />
-        <TextField fx:id="endDateField" promptText="YYYY-MM-DD" />
-    </HBox>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Report Type:" prefWidth="120"/>
+            <ChoiceBox fx:id="reportTypeChoice" prefWidth="250"/>
+        </HBox>
 
-    <HBox spacing="10" alignment="CENTER">
-        <Label text="Merchant ID:" />
-        <TextField fx:id="merchantIdField" promptText="Optional for some reports" />
-    </HBox>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Start Date:" prefWidth="120"/>
+            <TextField fx:id="startDateField" promptText="YYYY-MM-DD" prefWidth="120"/>
+            <Label text="End Date:" />
+            <TextField fx:id="endDateField" promptText="YYYY-MM-DD" prefWidth="120"/>
+        </HBox>
 
-    <Button text="Generate Report" onAction="#handleGenerateReport" />
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Merchant ID:" prefWidth="120"/>
+            <TextField fx:id="merchantIdField" promptText="Optional" prefWidth="250"/>
+        </HBox>
 
-    <TextArea fx:id="reportOutputArea" prefHeight="300" wrapText="true" editable="false" />
+    </VBox>
+
+    <!-- Button -->
+    <Button text="Generate Report"
+            onAction="#handleGenerateReport"
+            prefWidth="200"
+            style="-fx-font-weight: bold;" />
+
+    <!-- Output -->
+    <VBox spacing="5" prefWidth="600">
+        <Label text="Report Output:" style="-fx-font-weight: bold;" />
+        <TextArea fx:id="reportOutputArea"
+                  prefHeight="280"
+                  wrapText="true"
+                  editable="false"/>
+    </VBox>
+
 </VBox>
