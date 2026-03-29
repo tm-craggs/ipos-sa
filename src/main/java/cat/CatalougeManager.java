@@ -1,6 +1,7 @@
 package cat;
 
 import db.DatabaseManager;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,6 +14,7 @@ import javafx.stage.Stage;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CatalougeManager {
@@ -25,12 +27,12 @@ public class CatalougeManager {
     @FXML private Button editItemButton;
     @FXML private Button deleteItemButton;
     @FXML private Button addStockButton;
+    @FXML private TableView<StockLowLevel> StockLimitReport;
 
     @FXML
     public void initialize() {
         searchField.textProperty().addListener((obs, old, newVal) -> filterTable(newVal));
         loadCatalogue();
-
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         deleteItemButton.setDisable(true);
@@ -67,6 +69,7 @@ public class CatalougeManager {
         tableView.getItems().addAll(items);
         totalItemsLabel.setText("Total items: " + items.size());
     }
+
 
     private void filterTable(String query) {
         tableView.getItems().clear();
@@ -150,11 +153,13 @@ public class CatalougeManager {
         TextField packageCost = new TextField();
         TextField availability = new TextField();
         TextField stockLimit = new TextField();
+        TextField orderPercentage = new TextField();
 
         unsigned(unitsPerPack);
         unsigned(packageCost);
         unsigned(availability);
         unsigned(stockLimit);
+        unsigned(orderPercentage);
 
         grid.add(new Label("Description:"), 0, 1);   grid.add(description, 1, 1);
         grid.add(new Label("Package Type:"), 0, 2);  grid.add(packageType, 1, 2);
@@ -163,6 +168,8 @@ public class CatalougeManager {
         grid.add(new Label("Package Cost:"), 0, 5);  grid.add(packageCost, 1, 5);
         grid.add(new Label("Availability:"), 0, 6);  grid.add(availability, 1, 6);
         grid.add(new Label("Stock Limit:"), 0, 7);   grid.add(stockLimit, 1, 7);
+        grid.add(new Label("Order %:"), 0, 8);    grid.add(orderPercentage, 1, 8);
+
 
 
         dialog.getDialogPane().setContent(grid);
@@ -177,6 +184,7 @@ public class CatalougeManager {
         packageCost.setText(String.valueOf(selected.getPackageCost()));
         availability.setText(String.valueOf(selected.getAvailability()));
         stockLimit.setText(String.valueOf(selected.getStockLimit()));
+        orderPercentage.setText(String.valueOf(selected.getOrderPercentage()));
 
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType == confirmButton) {
@@ -187,6 +195,7 @@ public class CatalougeManager {
                 DatabaseManager.updatePackageCost(id, Double.parseDouble(packageCost.getText().trim()));
                 DatabaseManager.updateAvailability(id, Integer.parseInt(availability.getText().trim()));
                 DatabaseManager.updateStockLimit(id, Integer.parseInt(stockLimit.getText().trim()));
+                DatabaseManager.updateOrderPerentage(id, Double.parseDouble(orderPercentage.getText().trim()));
                 loadCatalogue();
             }
         });
@@ -213,12 +222,14 @@ public class CatalougeManager {
         TextField packageCost = new TextField();
         TextField availability = new TextField();
         TextField stockLimit = new TextField();
+        TextField orderPercentage = new TextField();
 
         unsigned(itemId);
         unsigned(unitsPerPack);
         unsigned(packageCost);
         unsigned(availability);
         unsigned(stockLimit);
+        unsigned(orderPercentage);
 
         grid.add(new Label("Item ID:"), 0, 0);       grid.add(itemId, 1, 0);
         grid.add(new Label("Description:"), 0, 1);   grid.add(description, 1, 1);
@@ -228,6 +239,7 @@ public class CatalougeManager {
         grid.add(new Label("Package Cost:"), 0, 5);  grid.add(packageCost, 1, 5);
         grid.add(new Label("Availability:"), 0, 6);  grid.add(availability, 1, 6);
         grid.add(new Label("Stock Limit:"), 0, 7);   grid.add(stockLimit, 1, 7);
+        grid.add(new Label("Order %:"), 0, 8);    grid.add(orderPercentage, 1, 8);
 
         itemId.setPromptText("Integer e.g. 100001");
         description.setPromptText("String e.g. Paracetamol");
@@ -237,6 +249,7 @@ public class CatalougeManager {
         packageCost.setPromptText("Double e.g. 0.10");
         availability.setPromptText("Integer e.g. 10000");
         stockLimit.setPromptText("Integer e.g. 300");
+        orderPercentage.setPromptText("10-50% (set automatically to 10%");
 
         dialog.getDialogPane().setContent(grid);
 
@@ -245,6 +258,7 @@ public class CatalougeManager {
                 try {
                     int avail = Integer.parseInt(availability.getText().trim());
                     int stock = Integer.parseInt(stockLimit.getText().trim());
+                    double orderP = orderPercentage.getText().trim().isEmpty() ? 10 : Double.parseDouble(orderPercentage.getText().trim());
 
                     DatabaseManager.addCatalogueItem(
                             Integer.parseInt(itemId.getText().trim()),
@@ -254,7 +268,9 @@ public class CatalougeManager {
                             Integer.parseInt(unitsPerPack.getText().trim()),
                             Double.parseDouble(packageCost.getText().trim()),
                             avail,
-                            stock
+                            stock,
+                            orderP
+
                     );
                     loadCatalogue();
                 } catch (NumberFormatException e) {
@@ -268,7 +284,22 @@ public class CatalougeManager {
     }
 
     @FXML
-    private void handleLowStock() {}
+    private void handleLowStock() {
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos/sa/StockLimitReport.fxml"));
+            Parent root = loader.load();
+
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setTitle("Low Stock Report");
+            dialog.getDialogPane().setContent(root);
+            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
+            dialog.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     @FXML
     private void handleMainMenu() {

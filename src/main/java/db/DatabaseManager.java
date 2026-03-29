@@ -1,6 +1,7 @@
 package db;
 
 import cat.CatalogueItem;
+import cat.StockLowLevel;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -53,7 +54,8 @@ public class DatabaseManager {
                     package_cost REAL,
                     availability INTEGER,
                     stock_limit INTEGER,
-                    status TEXT
+                    status TEXT,
+                    order_percentage DOUBLE
                 );
             """);
         }
@@ -71,6 +73,26 @@ public class DatabaseManager {
         }
     }
 
+    public static List<StockLowLevel> getLowStockItems() {
+        List<StockLowLevel> list = new ArrayList<>();
+        String sql = "SELECT * FROM catalogue WHERE status = 'Low stock';";
+        try (var stmt = conn.createStatement();
+             var rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                list.add(new StockLowLevel(
+                        rs.getInt("item_id"),
+                        rs.getString("description"),
+                        rs.getInt("availability"),
+                        rs.getInt("stock_limit"),
+                        rs.getDouble("order_percentage")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to load catalogue: " + e.getMessage());
+        }
+        return list;
+    }
+
     public static List<CatalogueItem> getCatalogueItems() {
         List<CatalogueItem> items = new ArrayList<>();
         String sql = "SELECT * FROM catalogue";
@@ -85,7 +107,8 @@ public class DatabaseManager {
                         rs.getInt("units_per_pack"),
                         rs.getDouble("package_cost"),
                         rs.getInt("availability"),
-                        rs.getInt("stock_limit")
+                        rs.getInt("stock_limit"),
+                        rs.getDouble("order_percentage")
                 ));
             }
         } catch (SQLException e) {
@@ -95,11 +118,11 @@ public class DatabaseManager {
     }
 
 
-    public static void addCatalogueItem(int itemId,String Description, String packageType, String unit, int unitsperPack, double packageCost,int availability, int stockLimit) {
+    public static void addCatalogueItem(int itemId,String Description, String packageType, String unit, int unitsperPack, double packageCost,int availability, int stockLimit, double orderPercentage) {
         String statusValue = availability < stockLimit ? "Low stock" : "OK";
         String sql ="""
-            INSERT INTO catalogue (item_id, description, package_type, unit, units_per_pack, package_cost, availability, stock_limit, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO catalogue (item_id, description, package_type, unit, units_per_pack, package_cost, availability, stock_limit, status, order_percentage)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
         try (var pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, itemId);
@@ -111,6 +134,7 @@ public class DatabaseManager {
             pstmt.setInt(7, availability);
             pstmt.setInt(8, stockLimit);
             pstmt.setString(9, statusValue);
+            pstmt.setDouble(10, orderPercentage);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Failed to add item: " + e.getMessage());
@@ -222,6 +246,19 @@ public class DatabaseManager {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Failed to delete item: " + e.getMessage());
+        }
+    }
+    public static void updateOrderPerentage(int id, double OP) {
+        String sql = """ 
+               UPDATE catalogue SET order_percentage = ? WHERE item_id = ?
+                """;
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setDouble(1, OP);
+            pstmt.setInt(2,id);
+            pstmt.executeUpdate();
+            updateStatus(id);
+        } catch (SQLException e) {
+            System.out.println("Failed to update description: " + e.getMessage());
         }
     }
 

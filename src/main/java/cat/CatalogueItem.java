@@ -12,10 +12,11 @@ public class CatalogueItem {
     private final IntegerProperty availability = new SimpleIntegerProperty();
     private final IntegerProperty stockLimit = new SimpleIntegerProperty();
     private final StringProperty status = new SimpleStringProperty();
+    private final DoubleProperty orderPercentage = new SimpleDoubleProperty();
 
     public CatalogueItem(int itemId, String description, String packageType,
                          String unit, int unitsPerPack, double packageCost,
-                         int availability, int stockLimit) {
+                         int availability, int stockLimit, Double orderPercentage) {
         this.itemId.set(itemId);
         this.description.set(description);
         this.packageType.set(packageType);
@@ -24,6 +25,7 @@ public class CatalogueItem {
         this.packageCost.set(packageCost);
         this.availability.set(availability);
         this.stockLimit.set(stockLimit);
+        this.orderPercentage.set(1 + (orderPercentage / 100.0));
         this.status.set(availability < stockLimit ? "Low stock" : "OK");
     }
 
@@ -36,6 +38,7 @@ public class CatalogueItem {
     public IntegerProperty availabilityProperty() { return availability; }
     public IntegerProperty stockLimitProperty() { return stockLimit; }
     public StringProperty statusProperty() { return status; }
+    public DoubleProperty orderPercentageProperty() { return orderPercentage; }
 
     public int getItemId() { return itemId.get(); }
     public String getDescription() { return description.get(); }
@@ -46,4 +49,5 @@ public class CatalogueItem {
     public int getAvailability() { return availability.get(); }
     public int getStockLimit() { return stockLimit.get(); }
     public String getStatus() { return status.get(); }
+    public double getOrderPercentage() { return orderPercentage.get(); }
 }
