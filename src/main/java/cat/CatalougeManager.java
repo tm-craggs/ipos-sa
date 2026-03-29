@@ -292,6 +292,8 @@ public class CatalougeManager {
             Dialog<ButtonType> dialog = new Dialog<>();
             dialog.setTitle("Low Stock Report");
             dialog.getDialogPane().setContent(root);
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+            dialog.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
             dialog.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
