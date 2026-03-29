@@ -1,20 +1,13 @@
 package ipos.sa;
 
 import db.DatabaseManager;
-import javafx.application.Application;
+import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
-import javafx.animation.TranslateTransition;
-import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.io.IOException;
-
 
 public class LoginController {
 
@@ -24,9 +17,7 @@ public class LoginController {
     @FXML private Button loginButton;
 
     @FXML
-    protected void handleLogin() {
-
-        // lock button during login
+    protected void handleLogin(ActionEvent event) {
         loginButton.setDisable(true);
 
         String user = userField.getText();
@@ -35,17 +26,15 @@ public class LoginController {
 
         if (accountType != null) {
             UserSession.login(user, accountType);
-            openMainMenu();
-            closeWindow();
+
+            SceneSwitcher.switchScene(event, "main-menu.fxml", "IPOS Main Menu");
+
         } else {
             statusLabel.setText("Invalid credentials.");
             statusLabel.setTextFill(Color.RED);
-
-            // shake status label on invalid login attempt to provide visual feedback
             shakeNode(statusLabel);
             loginButton.setDisable(false);
         }
-
     }
 
     private void shakeNode(Node node) {
@@ -55,30 +44,6 @@ public class LoginController {
         tt.setCycleCount(4);
         tt.setAutoReverse(true);
         tt.play();
-    }
-
-    private void closeWindow() {
-
-        Stage stage = (Stage) loginButton.getScene().getWindow();
-        stage.close();
-
-    }
-
-    private void openMainMenu(){
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("main-menu.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = new Stage();
-            stage.setTitle("IPOS Main Menu");
-
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
 }

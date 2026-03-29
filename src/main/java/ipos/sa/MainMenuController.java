@@ -74,17 +74,9 @@ public class MainMenuController {
     private void handleLogout(ActionEvent event) {
         try {
             UserSession.logout();
-            closeWindow();
             System.out.println("Logging out...");
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("login-window.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = new Stage();
-            stage.setTitle("IPOS");
-
-            stage.setScene(new Scene(root));
-            stage.show();
+            SceneSwitcher.switchScene(event, "login-window.fxml", "Login");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,8 +85,11 @@ public class MainMenuController {
     }
 
     @FXML
-    private void handleAcc() {
+    private void handleAcc(ActionEvent event) {
+
         System.out.println("Opening IPOS-ACC...");
+        SceneSwitcher.switchScene(event, "/acc/acc-window.fxml", "IPOS-ACC");
+
     }
 
     @FXML
