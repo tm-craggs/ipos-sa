@@ -1,20 +1,16 @@
 package cat;
 
 import db.DatabaseManager;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CatalougeManager {
@@ -286,7 +282,7 @@ public class CatalougeManager {
     @FXML
     private void handleLowStock() {
         try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos/sa/StockLimitReport.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos-sa-cat/StockLimitReport.fxml"));
             Parent root = loader.load();
 
             Dialog<ButtonType> dialog = new Dialog<>();
@@ -305,7 +301,7 @@ public class CatalougeManager {
     @FXML
     private void handleMainMenu() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos/sa/main-menu.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos-sa/main-menu.fxml"));
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("IPOS Main Menu");

@@ -101,7 +101,7 @@ public class MainMenuController {
     private void handleCat() {
         System.out.println("Opening IPOS-CAT...");
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("cat-stcokmanager.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos-sa-cat/cat-stcokmanager.fxml"));
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("Catalogue");
