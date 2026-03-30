@@ -1,6 +1,7 @@
 package ipos.sa;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -25,4 +26,11 @@ public class LoginWindow extends Application {
         stage.setScene(scene);
         stage.show();
     }
+
+    @Override
+    public void stop() {
+        Platform.exit();
+        System.exit(0);
+    }
+
 }
