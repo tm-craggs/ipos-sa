@@ -89,7 +89,7 @@ public class DatabaseManager {
         }
     }
 
-    public static void addUser(String type, String username, String password, float credit_limit, String discount_plan){
+    public static void addUser(String type, String username, String password, float credit_limit, String discount_plan) {
         String sql = "INSERT INTO users (type, username, password, credit_limit, discount_plan) VALUES (?, ?, ?, ?, ?)";
         try (var pstmt = conn.prepareStatement(sql)) {
 
@@ -104,6 +104,7 @@ public class DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
 
     public static List<StockLowLevel> getLowStockItems() {
         List<StockLowLevel> list = new ArrayList<>();
