@@ -72,30 +72,6 @@ st.execute("""
         movement_date TEXT NOT NULL
     );
 """);
-
-st.execute("""
-    INSERT OR IGNORE INTO stock_movements (movement_id, item_id, movement_type, quantity, movement_date)
-    VALUES
-    (1, 'ITM001', 'SOLD', 20, '2026-01-05'),
-    (2, 'ITM001', 'RECEIVED', 50, '2026-01-10'),
-    (3, 'ITM002', 'SOLD', 10, '2026-01-12'),
-    (4, 'ITM002', 'RECEIVED', 30, '2026-01-15');
-""");
-
-st.execute("""
-    INSERT OR IGNORE INTO invoices (invoice_id, merchant_id, amount, invoice_date, payment_status)
-    VALUES 
-    ('INV001', 'M001', 100, '2026-01-01', 'PAID'),
-    ('INV002', 'M002', 200, '2026-01-05', 'PENDING');
-""");
-
-st.execute("""
-    INSERT OR IGNORE INTO orders (order_id, merchant_id, order_date, order_value, dispatch_date, payment_status)
-    VALUES
-    ('ORD001', 'M001', '2026-01-01', 100, '2026-01-02', 'PAID'),
-    ('ORD002', 'M001', '2026-01-05', 200, '2026-01-06', 'PENDING'),
-    ('ORD003', 'M002', '2026-01-07', 150, '2026-01-08', 'PAID');
-""");
         }
     }
 
