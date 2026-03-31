@@ -29,7 +29,11 @@ public class DatabaseManager {
      * @throws SQLException
      */
     private static void init() throws SQLException {
+
+        // run queries to set up basic tables
         try (var st = conn.createStatement()) {
+
+            // create user table for ipos-sa-acc
             st.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,26 +44,60 @@ public class DatabaseManager {
                     discount_plan TEXT
                 );
             """);
+
+            // seed first user into users database
             st.execute("""
                 INSERT OR IGNORE INTO users (username, password, type)
                 VALUES ('director', 'director', 'DIRECTOR')
             """);
 
- // adding a database for table for ipos-sa-cat
- st.execute("""
-    CREATE TABLE IF NOT EXISTS catalogue (
-        item_id INTEGER PRIMARY KEY,
-        description TEXT NOT NULL,
-        package_type TEXT,
-        unit TEXT,
-        units_per_pack INTEGER,
-        package_cost REAL,
-        availability INTEGER,
-        stock_limit INTEGER,
-        status TEXT,
-        order_percentage DOUBLE
-    );
-""");
+            // adding a database for table for ipos-sa-cat
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS catalogue (
+                    item_id INTEGER PRIMARY KEY,
+                    description TEXT NOT NULL,
+                    package_type TEXT,
+                    unit TEXT,
+                    units_per_pack INTEGER,
+                    package_cost REAL,
+                    availability INTEGER,
+                    stock_limit INTEGER,
+                    status TEXT,
+                    order_percentage DOUBLE
+                );
+            """);
+
+            // adding database tables for ipos-sa-rpt
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS invoices (
+                    invoice_id TEXT PRIMARY KEY,
+                    merchant_id TEXT NOT NULL,
+                    amount REAL NOT NULL,
+                    invoice_date TEXT NOT NULL,
+                    payment_status TEXT
+                );
+            """);
+
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS orders (
+                    order_id TEXT PRIMARY KEY,
+                    merchant_id TEXT NOT NULL,
+                    order_date TEXT NOT NULL,
+                    order_value REAL NOT NULL,
+                    dispatch_date TEXT,
+                    payment_status TEXT
+                );
+            """);
+
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS stock_movements (
+                    movement_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    item_id TEXT NOT NULL,
+                    movement_type TEXT NOT NULL,
+                    quantity INTEGER NOT NULL,
+                    movement_date TEXT NOT NULL
+                );
+            """);
         }
     }
 
