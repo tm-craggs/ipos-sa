@@ -4,48 +4,56 @@
 <?import javafx.scene.layout.*?>
 
 <VBox spacing="15" alignment="TOP_CENTER" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="rpt.ReportWindow" prefWidth="700" prefHeight="500"
-      style="-fx-padding: 20;">
+fx:controller="rpt.ReportWindow" prefWidth="700" prefHeight="550"
+style="-fx-padding: 20;">
 
-    <!-- Title -->
-    <Label text="IPOS Reports"
-           style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+<Label text="IPOS Reports"
+style="-fx-font-size: 22px; -fx-font-weight: bold;" />
 
-    <!-- Form Section -->
-    <VBox spacing="10" prefWidth="500">
+<VBox spacing="10" prefWidth="500">
 
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <Label text="Report Type:" prefWidth="120"/>
-            <ChoiceBox fx:id="reportTypeChoice" prefWidth="250"/>
-        </HBox>
+<HBox spacing="10" alignment="CENTER_LEFT">
+<Label text="Report Type:" prefWidth="120"/>
+<ChoiceBox fx:id="reportTypeChoice" prefWidth="250"/>
+</HBox>
 
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <Label text="Start Date:" prefWidth="120"/>
-            <TextField fx:id="startDateField" promptText="YYYY-MM-DD" prefWidth="120"/>
-            <Label text="End Date:" />
-            <TextField fx:id="endDateField" promptText="YYYY-MM-DD" prefWidth="120"/>
-        </HBox>
+<HBox spacing="10" alignment="CENTER_LEFT">
+<Label text="Start Date:" prefWidth="120"/>
+<TextField fx:id="startDateField" promptText="YYYY-MM-DD" prefWidth="120"/>
+<Label text="End Date:" />
+<TextField fx:id="endDateField" promptText="YYYY-MM-DD" prefWidth="120"/>
+</HBox>
 
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <Label text="Merchant ID:" prefWidth="120"/>
-            <TextField fx:id="merchantIdField" promptText="Optional" prefWidth="250"/>
-        </HBox>
+<HBox spacing="10" alignment="CENTER_LEFT">
+<Label text="Merchant ID:" prefWidth="120"/>
+<TextField fx:id="merchantIdField" promptText="Optional" prefWidth="250"/>
+</HBox>
 
-    </VBox>
+<HBox spacing="10" alignment="CENTER_LEFT">
+<Label text="Invoice ID:" prefWidth="120"/>
+<TextField fx:id="invoiceIdField" promptText="For invoice details" prefWidth="250"/>
+</HBox>
 
-    <!-- Button -->
-    <Button text="Generate Report"
-            onAction="#handleGenerateReport"
-            prefWidth="200"
-            style="-fx-font-weight: bold;" />
+</VBox>
 
-    <!-- Output -->
-    <VBox spacing="5" prefWidth="600">
-        <Label text="Report Output:" style="-fx-font-weight: bold;" />
-        <TextArea fx:id="reportOutputArea"
-                  prefHeight="280"
-                  wrapText="true"
-                  editable="false"/>
-    </VBox>
+<HBox spacing="10" alignment="CENTER">
+<Button text="Generate Report"
+onAction="#handleGenerateReport"
+prefWidth="180"
+style="-fx-font-weight: bold;" />
+
+<Button text="View Invoice Details"
+onAction="#handleInvoiceDetails"
+prefWidth="180"
+style="-fx-font-weight: bold;" />
+</HBox>
+
+<VBox spacing="5" prefWidth="600">
+<Label text="Report Output:" style="-fx-font-weight: bold;" />
+<TextArea fx:id="reportOutputArea"
+prefHeight="300"
+wrapText="true"
+editable="false"/>
+</VBox>
 
 </VBox>

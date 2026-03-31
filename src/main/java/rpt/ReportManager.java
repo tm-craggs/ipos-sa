@@ -128,7 +128,7 @@ public class ReportManager {
                 int totalOrders = rs.getInt("total_orders");
                 double totalRevenue = rs.getDouble("total_revenue");
     
-                report.append("Total Orders Recieved: ").append(totalOrders).append("\n");
+                report.append("Total Orders Received: ").append(totalOrders).append("\n");
                 report.append("Total Revenue: ").append(totalRevenue).append("\n");
             } else {
                 report.append("No data found.\n");
@@ -349,6 +349,41 @@ public String generateStockTurnoverReport(String startDate, String endDate) {
             report.append("Goods Received: ").append(goodsReceived).append("\n");
         } else {
             report.append("No stock movement data found for this period.\n");
+        }
+
+    } catch (SQLException e) {
+        report.append("Error generating report: ").append(e.getMessage());
+    }
+
+    return report.toString();
+}
+// generates detailed report for a single invoice
+public String generateInvoiceDetailsReport(String invoiceId) {
+    StringBuilder report = new StringBuilder();
+
+    report.append("=== Invoice Details ===\n");
+    report.append("Invoice ID: ").append(invoiceId).append("\n\n");
+
+    String sql = """
+        SELECT invoice_id, merchant_id, amount, invoice_date, payment_status
+        FROM invoices
+        WHERE invoice_id = ?
+    """;
+
+    try {
+        Connection conn = DatabaseManager.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, invoiceId);
+
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            report.append("Merchant: ").append(rs.getString("merchant_id")).append("\n");
+            report.append("Amount: ").append(rs.getDouble("amount")).append("\n");
+            report.append("Date: ").append(rs.getString("invoice_date")).append("\n");
+            report.append("Payment: ").append(rs.getString("payment_status")).append("\n");
+        } else {
+            report.append("Invoice not found.\n");
         }
 
     } catch (SQLException e) {
