@@ -74,35 +74,29 @@ public class DatabaseManager {
             return null;
         }
     }
-    public static void addUser(String type, String username, String password){
-        String sql = "INSERT INTO users (type, username, password) VALUES (?, ?, ?)";
+    public static void addUser(String username, String password, String type) {
+        String sql = "INSERT INTO users (username, password, type) VALUES (?, ?, ?)";
         try (var pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, type);
-            pstmt.setString(2, username);
-            pstmt.setString(3, password);
-
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            pstmt.setString(3, type);
             pstmt.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void addUser(String type, String username, String password, float credit_limit, String discount_plan) {
-        String sql = "INSERT INTO users (type, username, password, credit_limit, discount_plan) VALUES (?, ?, ?, ?, ?)";
+    public static void addUser(String username, String password, String type, float creditLimit, String discountPlan) {
+        String sql = "INSERT INTO users (username, password, type, credit_limit, discount_plan) VALUES (?, ?, ?, ?, ?)";
         try (var pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, type);
-            pstmt.setString(2, username);
-            pstmt.setString(3, password);
-            pstmt.setFloat(4, credit_limit);
-            pstmt.setString(5, discount_plan);
-
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            pstmt.setString(3, type);
+            pstmt.setFloat(4, creditLimit);
+            pstmt.setString(5, discountPlan);
             pstmt.executeUpdate();
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error adding full user: " + e.getMessage());
         }
     }
 
@@ -294,6 +288,10 @@ public class DatabaseManager {
             System.out.println("Failed to update description: " + e.getMessage());
 
         }
+    }
+
+    public static Connection getConnection() {
+        return conn;
     }
 
     public static void main(String[] args) {

@@ -72,11 +72,11 @@ public class AccountController {
             }
 
             // pass in base details, and the merchant-specific details
-            DatabaseManager.addUser(user, role, password, limit, discountPlan);
+            DatabaseManager.addUser(user, password, role, limit, discountPlan);
 
         } else {
             // pass in base details only
-            DatabaseManager.addUser(user, role, password);
+            DatabaseManager.addUser(user, password, role);
         }
 
         // success feedback
