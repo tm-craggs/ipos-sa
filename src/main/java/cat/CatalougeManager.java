@@ -1,8 +1,10 @@
 package cat;
 
 import db.DatabaseManager;
+import ipos.sa.SceneSwitcher;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -10,7 +12,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 public class CatalougeManager {
@@ -280,7 +282,7 @@ public class CatalougeManager {
     }
 
     @FXML
-    private void handleLowStock() {
+    private void handleLowStock(ActionEvent event) {
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos-sa-cat/StockLimitReport.fxml"));
             Parent root = loader.load();
@@ -297,19 +299,12 @@ public class CatalougeManager {
 
     }
 
-
     @FXML
-    private void handleMainMenu() {
+    private void handleMainMenu(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos-sa/main-menu.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("IPOS Main Menu");
-            stage.setScene(new Scene(root));
-            stage.show();
-            Stage current = (Stage) tableView.getScene().getWindow();
-            current.close();
-        } catch (IOException e) {
+            SceneSwitcher.switchScene(event, "main-menu.fxml", "IPOS Main Menu");
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

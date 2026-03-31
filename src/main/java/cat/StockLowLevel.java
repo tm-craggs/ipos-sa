@@ -25,8 +25,8 @@ public class StockLowLevel {
         this.Description.set(Description);
         this.Availability.set(Availability);
         this.StockLimit.set(StockLimit);
-        this.orderPercentage.set(1.10);
-        this.Recommended.set( (int) Math.ceil(StockLimit * this.orderPercentage.get() ) - Availability);
+        this.orderPercentage.set(10);
+        this.Recommended.set( (int) Math.ceil(StockLimit *  (1 + (this.orderPercentage.get() / 100.0) ) - Availability));
     }
 
     public int getItemId() { return ItemId.get(); }
