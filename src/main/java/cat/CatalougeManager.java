@@ -11,7 +11,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.List;
 
 public class CatalougeManager {
@@ -281,7 +282,7 @@ public class CatalougeManager {
     }
 
     @FXML
-    private void handleLowStock() {
+    private void handleLowStock(ActionEvent event) {
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos-sa-cat/StockLimitReport.fxml"));
             Parent root = loader.load();
