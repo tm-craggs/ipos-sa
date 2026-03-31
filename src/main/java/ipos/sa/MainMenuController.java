@@ -93,16 +93,10 @@ public class MainMenuController {
     }
 
     @FXML
-    private void handleCat() {
+    private void handleCat(ActionEvent event) {
         System.out.println("Opening IPOS-CAT...");
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos-sa-cat/cat-stcokmanager.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Catalogue");
-            stage.setScene(new Scene(root));
-            stage.show();
-            closeWindow();
+            SceneSwitcher.switchScene(event, "/ipos-sa-cat/cat-stockmanager.fxml", "IPOS-ACC");
         } catch (Exception e) {e.printStackTrace();}
     }
 

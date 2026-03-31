@@ -25,7 +25,7 @@ public class CatalogueItem {
         this.packageCost.set(packageCost);
         this.availability.set(availability);
         this.stockLimit.set(stockLimit);
-        this.orderPercentage.set(1 + (orderPercentage / 100.0));
+        this.orderPercentage.set(orderPercentage);
         this.status.set(availability < stockLimit ? "Low stock" : "OK");
     }
 
