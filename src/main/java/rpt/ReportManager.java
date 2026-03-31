@@ -102,44 +102,47 @@ public class ReportManager {
         return report.toString();
     }
 
-    // generates turnover report (goods sold + revenue)
-    public String generateTurnoverReport(String startDate, String endDate) {
-        StringBuilder report = new StringBuilder();
-    
-        report.append("=== Turnover Report ===\n");
-        report.append("From: ").append(startDate)
-              .append(" To: ").append(endDate).append("\n\n");
-    
-        String sql = """
-            SELECT COUNT(*) AS total_orders, SUM(order_value) AS total_revenue
-            FROM orders
-            WHERE order_date BETWEEN ? AND ?
-        """;
-    
-        try {
-            Connection conn = DatabaseManager.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, startDate);
-            pstmt.setString(2, endDate);
-    
-            ResultSet rs = pstmt.executeQuery();
-    
-            if (rs.next()) {
-                int totalOrders = rs.getInt("total_orders");
-                double totalRevenue = rs.getDouble("total_revenue");
-    
-                report.append("Total Orders Received: ").append(totalOrders).append("\n");
-                report.append("Total Revenue: ").append(totalRevenue).append("\n");
-            } else {
-                report.append("No data found.\n");
-            }
-    
-        } catch (SQLException e) {
-            report.append("Error generating report: ").append(e.getMessage());
+    // generates turnover report (quantities of goods sold + revenue)
+public String generateTurnoverReport(String startDate, String endDate) {
+    StringBuilder report = new StringBuilder();
+
+    report.append("=== Turnover Report ===\n");
+    report.append("From: ").append(startDate)
+          .append(" To: ").append(endDate).append("\n\n");
+
+    String sql = """
+        SELECT 
+            SUM(oi.quantity) AS total_goods_sold,
+            SUM(oi.amount) AS total_revenue
+        FROM order_items oi
+        JOIN orders o ON oi.order_id = o.order_id
+        WHERE o.order_date BETWEEN ? AND ?
+    """;
+
+    try {
+        Connection conn = DatabaseManager.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, startDate);
+        pstmt.setString(2, endDate);
+
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            int totalGoods = rs.getInt("total_goods_sold");
+            double totalRevenue = rs.getDouble("total_revenue");
+
+            report.append("Total Goods Sold: ").append(totalGoods).append("\n");
+            report.append("Total Revenue: ").append(totalRevenue).append("\n");
+        } else {
+            report.append("No data found.\n");
         }
-    
-        return report.toString();
+
+    } catch (SQLException e) {
+        report.append("Error generating report: ").append(e.getMessage());
     }
+
+    return report.toString();
+}
 
    // generates list of orders for a merchant (Appendix-style)
 public String generateMerchantOrdersReport(String merchantId, String startDate, String endDate) {
