@@ -85,6 +85,7 @@ public class DatabaseManager {
                     order_date TEXT NOT NULL,
                     order_value REAL NOT NULL,
                     dispatch_date TEXT,
+                    delivered_date TEXT,
                     payment_status TEXT
                 );
             """);
@@ -98,6 +99,16 @@ public class DatabaseManager {
                     movement_date TEXT NOT NULL
                 );
             """);
+            st.execute("""
+    CREATE TABLE IF NOT EXISTS order_items (
+        order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_id TEXT NOT NULL,
+        item_id INTEGER NOT NULL,
+        quantity INTEGER NOT NULL,
+        unit_cost REAL NOT NULL,
+        amount REAL NOT NULL
+    );
+""");
         }
     }
 
