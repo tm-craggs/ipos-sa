@@ -46,6 +46,11 @@ style="-fx-font-weight: bold;" />
 onAction="#handleInvoiceDetails"
 prefWidth="180"
 style="-fx-font-weight: bold;" />
+
+<Button text="Print Report"
+onAction="#handlePrint"
+prefWidth="180"
+style="-fx-font-weight: bold;" />
 </HBox>
 
 <VBox spacing="5" prefWidth="600">

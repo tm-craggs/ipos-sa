@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.print.PrinterJob;
+import javafx.scene.control.Alert;
 
 public class ReportWindow {
 
@@ -79,4 +81,34 @@ return;
 String result = reportManager.generateInvoiceDetailsReport(invoiceId);
 reportOutputArea.setText(result);
 }
+
+@FXML
+private void handlePrint() {
+String content = reportOutputArea.getText();
+
+if (content == null || content.isBlank()) {
+reportOutputArea.setText("No report to print.");
+return;
+}
+
+PrinterJob job = PrinterJob.createPrinterJob();
+
+if (job != null && job.showPrintDialog(reportOutputArea.getScene().getWindow())) {
+boolean success = job.printPage(reportOutputArea);
+
+if (success) {
+job.endJob();
+} else {
+showError("Printing failed.");
+}
+}
+}
+
+private void showError(String message) {
+Alert alert = new Alert(Alert.AlertType.ERROR);
+alert.setContentText(message);
+alert.show();
+}
+
+
 }
