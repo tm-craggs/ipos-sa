@@ -2,6 +2,7 @@ package db;
 
 import cat.CatalogueItem;
 import cat.StockLowLevel;
+import ord.OrderItem;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -78,6 +79,7 @@ public class DatabaseManager {
                 );
             """);
 
+            // table for order the order id and merchantid are as strings idk why but someone should fix it
             st.execute("""
                 CREATE TABLE IF NOT EXISTS orders (
                     order_id TEXT PRIMARY KEY,
@@ -337,6 +339,53 @@ public class DatabaseManager {
             System.out.println("Failed to update description: " + e.getMessage());
 
         }
+    }
+
+    // table for order the order id and merchantid are as strings idk why but someone should fix it
+    public static void submitOrder(String orderid, String merhcantid, String orderdate, double ordervalue, List<OrderItem> items) {
+        try {
+            conn.setAutoCommit(false);
+
+            var ps1 = conn.prepareStatement("INSERT INTO orders (order_id, merchant_id, order_date, order_value, payment_status) VALUES (?,?,?,?,?)");
+            ps1.setString(1, orderid);
+            ps1.setString(2, merhcantid);
+            ps1.setString(3, orderdate);
+            ps1.setDouble(4, ordervalue);
+            ps1.setString(5, "Pending");
+            ps1.executeUpdate();
+            ps1.close();
+
+            var ps2 = conn.prepareStatement("INSERT INTO order_items (order_id, item_id, quantity, unit_cost, amount) VALUES (?,?,?,?,?)");
+            var ps3 = conn.prepareStatement("UPDATE catalogue SET availability = availability - ? WHERE item_id = ?");
+
+            for (OrderItem item : items) {
+                ps2.setString(1, orderid);
+                ps2.setInt(2, item.getItemId());
+                ps2.setInt(3, item.getQuantity());
+                ps2.setDouble(4, item.getUnitCost());
+                ps2.setDouble(5, item.getAmount());
+                ps2.executeUpdate();
+
+                ps3.setInt(1, item.getQuantity());
+                ps3.setInt(2, item.getItemId());
+                ps3.executeUpdate();
+            }
+            ps2.close();
+            ps3.close();
+
+            // insert invoice
+            var ps4 = conn.prepareStatement("INSERT INTO invoices (invoice_id, merchant_id, amount, invoice_date, payment_status) VALUES (?,?,?,?,?)");
+            ps4.setString(1, "INV-" + orderid);
+            ps4.setString(2, merhcantid);
+            ps4.setDouble(3, ordervalue);
+            ps4.setString(4, orderdate);
+            ps4.setString(5, "Pending");
+            ps4.executeUpdate();
+            ps4.close();
+
+            conn.commit();
+
+        } catch (SQLException e) {}
     }
 
     public static Connection getConnection() {

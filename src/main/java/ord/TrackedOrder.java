@@ -2,7 +2,7 @@ package ord;
 
 import javafx.beans.property.*;
 
-public class Order {
+public class TrackedOrder {
     private final StringProperty orderId = new SimpleStringProperty();
     private final StringProperty merchantId = new SimpleStringProperty();
     private final StringProperty orderDate = new SimpleStringProperty();
@@ -11,9 +11,9 @@ public class Order {
     private final StringProperty deliveredDate = new SimpleStringProperty();
     private final StringProperty paymentStatus = new SimpleStringProperty();
 
-    public Order(String orderId, String merchantId, String orderDate,
-                 double orderValue, String dispatchDate,
-                 String deliveredDate, String paymentStatus) {
+    public TrackedOrder(String orderId, String merchantId, String orderDate,
+                        double orderValue, String dispatchDate,
+                        String deliveredDate, String paymentStatus) {
         this.orderId.set(orderId);
         this.merchantId.set(merchantId);
         this.orderDate.set(orderDate);

@@ -7,6 +7,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -15,11 +16,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="600" prefWidth="900" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ord.OrderManager">
+<BorderPane prefHeight="600" prefWidth="900" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ord.OrderManager">
 
     <top>
         <AnchorPane prefHeight="20.0" prefWidth="900.0" style="-fx-padding: 10;">
-            <Button onAction="" text="Main Menu" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0" />
+            <Button text="Main Menu" onAction="#handleMainMenu" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0" />
             <Label fx:id="balanceLabel" text="Balance: £0.00 / £0.00" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="8.0" />
         </AnchorPane>
     </top>
@@ -36,18 +37,26 @@
                         <VBox spacing="10">
                             <padding><Insets bottom="5" left="5" right="5" top="5" /></padding>
                             <Label text="Catalogue" />
-                            <TableView fx:id="catalogueTable" VBox.vgrow="ALWAYS">
+                            <TableView fx:id="catalogue" VBox.vgrow="ALWAYS">
                                 <columns>
-                                    <TableColumn fx:id="catIdCol" prefWidth="80" text="Item ID" />
-                                    <TableColumn fx:id="catDescCol" prefWidth="150" text="Description" />
-                                    <TableColumn fx:id="catPriceCol" prefWidth="112.0" text="Price (£)" />
-                                    <TableColumn fx:id="catAvailCol" prefWidth="171.0" text="Available" />
+                                    <TableColumn fx:id="catIdCol" prefWidth="80" text="Item ID">
+                                        <cellValueFactory><PropertyValueFactory property="itemId"/> </cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="catDescCol" prefWidth="150" text="Description">
+                                        <cellValueFactory><PropertyValueFactory property="description"/> </cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="catPriceCol" prefWidth="112.0" text="Price (£)">
+                                        <cellValueFactory><PropertyValueFactory property="packageCost"/> </cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="catAvailCol" prefWidth="171.0" text="Available">
+                                        <cellValueFactory><PropertyValueFactory property="availability"/> </cellValueFactory>
+                                    </TableColumn>
                                 </columns>
                             </TableView>
                             <HBox alignment="CENTER_LEFT" spacing="10">
                                 <Label text="Qty:" />
                                 <TextField fx:id="quantityField" prefWidth="60" promptText="0" />
-                                <Button fx:id="addToCartButton" onAction="" text="Add to Cart" />
+                                <Button fx:id="addToCartButton" onAction="#handleAddToCart"  text="Add to Cart" />
                             </HBox>
                         </VBox>
 
@@ -56,16 +65,24 @@
                             <Label text="Your Order" />
                             <TableView fx:id="cartTable" VBox.vgrow="ALWAYS">
                                 <columns>
-                                    <TableColumn fx:id="cartDescCol" prefWidth="114.0" text="Item" />
-                                    <TableColumn fx:id="cartQtyCol" prefWidth="71.0" text="Qty" />
-                                    <TableColumn fx:id="cartUnitCol" prefWidth="50.0" text="Unit £" />
-                                    <TableColumn fx:id="cartTotalCol" prefWidth="102.0" text="Total £" />
+                                    <TableColumn fx:id="cartDescCol" prefWidth="114.0" text="Item">
+                                        <cellValueFactory><PropertyValueFactory property="description"/> </cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="cartQtyCol" prefWidth="71.0" text="Qty">
+                                        <cellValueFactory><PropertyValueFactory property="quantity"/> </cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="cartUnitCol" prefWidth="50.0" text="Unit £">
+                                        <cellValueFactory><PropertyValueFactory property="unitCost"/> </cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="cartTotalCol" prefWidth="102.0" text="Total £">
+                                        <cellValueFactory><PropertyValueFactory property="amount"/> </cellValueFactory>
+                                    </TableColumn>
                                 </columns>
                             </TableView>
-                            <Button fx:id="removeFromCartButton" onAction="" text="Remove Selected" />
+                            <Button fx:id="removeFromCartButton" onAction="#handleRemoveFromCart" text="Remove Selected" />
                             <Separator />
                             <Label fx:id="grandTotalLabel" style="-fx-font-size: 14; -fx-font-weight: bold;" text="Grand Total: £0.00" />
-                            <Button fx:id="submitOrderButton" maxWidth="Infinity" onAction="" text="Submit Order" />
+                            <Button fx:id="submitOrderButton" maxWidth="Infinity"  onAction="#handleSubmitOrder"   text="Submit Order" />
                         </VBox>
                     </SplitPane>
                 </AnchorPane>
