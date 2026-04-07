@@ -2,7 +2,9 @@ package db;
 
 import cat.CatalogueItem;
 import cat.StockLowLevel;
+import ord.Invoice;
 import ord.OrderItem;
+import ord.TrackedOrder;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -373,7 +375,7 @@ public class DatabaseManager {
             ps2.close();
             ps3.close();
 
-            // insert invoice
+
             var ps4 = conn.prepareStatement("INSERT INTO invoices (invoice_id, merchant_id, amount, invoice_date, payment_status) VALUES (?,?,?,?,?)");
             ps4.setString(1, "INV-" + orderid);
             ps4.setString(2, merhcantid);
@@ -387,6 +389,101 @@ public class DatabaseManager {
 
         } catch (SQLException e) {}
     }
+
+    public static List<TrackedOrder> getOrdersByMerchant(String merchantId) {
+        List<TrackedOrder> list = new ArrayList<>();
+        String sql = "SELECT * FROM orders WHERE merchant_id = ? ORDER BY order_date DESC";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, merchantId);
+            var rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new TrackedOrder(
+                        rs.getString("order_id"),
+                        rs.getString("merchant_id"),
+                        rs.getString("order_date"),
+                        rs.getDouble("order_value"),
+                        rs.getString("dispatch_date"),
+                        rs.getString("delivered_date"),
+                        rs.getString("payment_status")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to load orders: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public static List<OrderItem> getOrderItems(String orderId) {
+        List<OrderItem> list = new ArrayList<>();
+        String sql = "SELECT oi.item_id, c.description, oi.quantity, oi.unit_cost, oi.amount FROM order_items oi LEFT JOIN catalogue c ON oi.item_id = c.item_id WHERE oi.order_id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, orderId);
+            var rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new OrderItem(
+                        rs.getInt("item_id"),
+                        rs.getString("description") != null ? rs.getString("description") : "Unknown",
+                        rs.getInt("quantity"),
+                        rs.getDouble("unit_cost"),
+                        rs.getDouble("amount")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to load order items: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public static List<Invoice> getUnpaidInvoices(String merchantId) {
+        List<Invoice> list = new ArrayList<>();
+        String sql = "SELECT * FROM invoices WHERE merchant_id = ? AND payment_status != 'Paid' ORDER BY invoice_date DESC";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, merchantId);
+            var rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Invoice(
+                        rs.getString("invoice_id"),
+                        rs.getString("invoice_date"),
+                        rs.getDouble("amount"),
+                        rs.getString("payment_status")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to load invoices: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public static void markInvoicePaid(String invoiceId) {
+        String sql = "UPDATE invoices SET payment_status = 'Paid' WHERE invoice_id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, invoiceId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to update invoice: " + e.getMessage());
+        }
+    }
+
+    public static double getCreditLimit(String username) {
+        String sql = "SELECT credit_limit FROM users WHERE username = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            var rs = ps.executeQuery();
+            if (rs.next()) return rs.getDouble("credit_limit");
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    public static double getOutstandingBalance(String merchantId) {
+        String sql = "SELECT COALESCE(SUM(amount), 0) as total FROM invoices WHERE merchant_id = ? AND payment_status != 'Paid'";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, merchantId);
+            var rs = ps.executeQuery();
+            if (rs.next()) return rs.getDouble("total");
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
 
     public static Connection getConnection() {
         return conn;

@@ -97,12 +97,24 @@
                             <Label text="Your Orders" />
                             <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS">
                                 <columns>
-                                    <TableColumn fx:id="ordIdCol" prefWidth="90" text="Order ID" />
-                                    <TableColumn fx:id="ordDateCol" prefWidth="90" text="Date" />
-                                    <TableColumn fx:id="ordValueCol" prefWidth="80" text="Value (£)" />
-                                    <TableColumn fx:id="ordDispCol" prefWidth="90" text="Dispatched" />
-                                    <TableColumn fx:id="ordDelCol" prefWidth="90" text="Delivered" />
-                                    <TableColumn fx:id="ordPayCol" prefWidth="80" text="Payment" />
+                                    <TableColumn fx:id="ordIdCol" prefWidth="90" text="Order ID">
+                                        <cellValueFactory><PropertyValueFactory property="orderId"/></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="ordDateCol" prefWidth="90" text="Date">
+                                        <cellValueFactory><PropertyValueFactory property="orderDate"/></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="ordValueCol" prefWidth="80" text="Value (£)">
+                                        <cellValueFactory><PropertyValueFactory property="orderValue"/></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="ordDispCol" prefWidth="90" text="Dispatched">
+                                        <cellValueFactory><PropertyValueFactory property="dispatchDate"/></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="ordDelCol" prefWidth="90" text="Delivered">
+                                        <cellValueFactory><PropertyValueFactory property="deliveredDate"/></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="ordPayCol" prefWidth="80" text="Payment">
+                                        <cellValueFactory><PropertyValueFactory property="paymentStatus"/></cellValueFactory>
+                                    </TableColumn>
                                 </columns>
                             </TableView>
                         </VBox>
@@ -112,11 +124,21 @@
                             <Label fx:id="orderInfoLabel" text="Select an order above to see details" />
                             <TableView fx:id="orderDetailsTable" VBox.vgrow="ALWAYS">
                                 <columns>
-                                    <TableColumn fx:id="detItemCol" prefWidth="80" text="Item ID" />
-                                    <TableColumn fx:id="detDescCol" prefWidth="160" text="Description" />
-                                    <TableColumn fx:id="detQtyCol" prefWidth="50" text="Qty" />
-                                    <TableColumn fx:id="detUnitCol" prefWidth="70" text="Unit £" />
-                                    <TableColumn fx:id="detAmtCol" prefWidth="80" text="Amount £" />
+                                    <TableColumn fx:id="detItemCol" prefWidth="80" text="Item ID">
+                                        <cellValueFactory><PropertyValueFactory property="itemId"/></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="detDescCol" prefWidth="160" text="Description">
+                                        <cellValueFactory><PropertyValueFactory property="description"/></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="detQtyCol" prefWidth="50" text="Qty">
+                                        <cellValueFactory><PropertyValueFactory property="quantity"/></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="detUnitCol" prefWidth="70" text="Unit £">
+                                        <cellValueFactory><PropertyValueFactory property="unitCost"/></cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="detAmtCol" prefWidth="80" text="Amount £">
+                                        <cellValueFactory><PropertyValueFactory property="amount"/></cellValueFactory>
+                                    </TableColumn>
                                 </columns>
                             </TableView>
                         </VBox>
@@ -147,10 +169,18 @@
                         <Label style="-fx-font-weight: bold; -fx-font-size: 13;" text="Unpaid Invoices" />
                         <TableView fx:id="invoicesTable" VBox.vgrow="ALWAYS">
                             <columns>
-                                <TableColumn fx:id="invIdCol" prefWidth="120" text="Invoice ID" />
-                                <TableColumn fx:id="invDateCol" prefWidth="100" text="Date" />
-                                <TableColumn fx:id="invAmtCol" prefWidth="100" text="Amount (£)" />
-                                <TableColumn fx:id="invStatusCol" prefWidth="100" text="Status" />
+                                <TableColumn fx:id="invIdCol" prefWidth="120" text="Invoice ID">
+                                    <cellValueFactory><PropertyValueFactory property="invoiceId"/></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="invDateCol" prefWidth="100" text="Date">
+                                    <cellValueFactory><PropertyValueFactory property="invoiceDate"/></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="invAmtCol" prefWidth="100" text="Amount (£)">
+                                    <cellValueFactory><PropertyValueFactory property="amount"/></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="invStatusCol" prefWidth="100" text="Status">
+                                    <cellValueFactory><PropertyValueFactory property="status"/></cellValueFactory>
+                                </TableColumn>
                             </columns>
                         </TableView>
                     </VBox>
