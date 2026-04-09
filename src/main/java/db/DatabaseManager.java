@@ -9,6 +9,7 @@ import ord.TrackedOrder;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class DatabaseManager {
 
@@ -84,7 +85,7 @@ public class DatabaseManager {
             // table for order the order id and merchantid are as strings idk why but someone should fix it
             st.execute("""
                 CREATE TABLE IF NOT EXISTS orders (
-                    order_id TEXT PRIMARY KEY,
+                    order_id TEXT PRIMARY KEY AUTOINCREMENT,
                     merchant_id TEXT NOT NULL,
                     order_date TEXT NOT NULL,
                     order_value REAL NOT NULL,
@@ -344,24 +345,34 @@ public class DatabaseManager {
     }
 
     // table for order the order id and merchantid are as strings idk why but someone should fix it
-    public static void submitOrder(String orderId, String merchantId, String orderDate, double orderValue, List<OrderItem> items) {
+
+    // tried to refactor this function to not take in orderID as a param and generate it, lmk if it messes stuff up
+    public static int submitOrder(String merchantId, String orderDate, double orderValue, List<OrderItem> items) {
         try {
             conn.setAutoCommit(false);
 
-            var ps1 = conn.prepareStatement("INSERT INTO orders (order_id, merchant_id, order_date, order_value, payment_status) VALUES (?,?,?,?,?)");
-            ps1.setString(1, orderId);
-            ps1.setString(2, merchantId);
-            ps1.setString(3, orderDate);
-            ps1.setDouble(4, orderValue);
-            ps1.setString(5, "Pending");
+            var ps1 = conn.prepareStatement("INSERT INTO orders (merchant_id, order_date, order_value, payment_status) VALUES (?,?,?,?,?)");
+            ps1.setString(1, merchantId);
+            ps1.setString(2, orderDate);
+            ps1.setDouble(3, orderValue);
+            ps1.setString(4, "Pending");
             ps1.executeUpdate();
+
+            // stinky hack coming up to get generated order ID as variable
+
+            // set orderId as -1 to represent fail
+            int orderId = -1;
+            // generate list of keys that have just been created
+            var keys = ps1.getGeneratedKeys();
+            // if there is a key, get the first one
+            if (keys.next()) orderId = keys.getInt(1);
             ps1.close();
 
             var ps2 = conn.prepareStatement("INSERT INTO order_items (order_id, item_id, quantity, unit_cost, amount) VALUES (?,?,?,?,?)");
             var ps3 = conn.prepareStatement("UPDATE catalogue SET availability = availability - ? WHERE item_id = ?");
 
             for (OrderItem item : items) {
-                ps2.setString(1, orderId);
+                ps2.setString(1, "INV-" + orderId);
                 ps2.setInt(2, item.getItemId());
                 ps2.setInt(3, item.getQuantity());
                 ps2.setDouble(4, item.getUnitCost());
@@ -387,7 +398,11 @@ public class DatabaseManager {
 
             conn.commit();
 
-        } catch (SQLException e) {}
+            return orderId;
+
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
     public static List<TrackedOrder> getOrdersByMerchant(String merchantId) {
@@ -482,6 +497,30 @@ public class DatabaseManager {
             if (rs.next()) return rs.getDouble("total");
         } catch (SQLException e) { e.printStackTrace(); }
         return 0;
+    }
+
+    public static Optional<CatalogueItem> getCatalogueItem(int itemId) {
+        String sql = "SELECT * FROM catalogue WHERE item_id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, itemId);
+            var rs = ps.executeQuery();
+            if (rs.next()) {
+                return Optional.of(new CatalogueItem(
+                        rs.getInt("item_id"),
+                        rs.getString("description"),
+                        rs.getString("package_type"),
+                        rs.getString("unit"),
+                        rs.getInt("units_per_pack"),
+                        rs.getDouble("package_cost"),
+                        rs.getInt("availability"),
+                        rs.getInt("stock_limit"),
+                        rs.getDouble("order_percentage")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to get item: " + e.getMessage());
+        }
+        return Optional.empty();
     }
 
 

@@ -111,11 +111,11 @@ public class OrderManager {
         for (OrderItem item : cartTable.getItems()) {
             total += item.getAmount();
         }
-        String orderId = "IP" + System.currentTimeMillis();
         String merchantId = ipos.sa.UserSession.getInstance().getUsername();
         String orderdate = java.time.LocalDate.now().toString();
 
-        DatabaseManager.submitOrder(orderId,merchantId,orderdate,total, cartTable.getItems());
+        int orderId = DatabaseManager.submitOrder(merchantId,orderdate,total, cartTable.getItems());
+        //TODO: Error handle case where orderId -1 is returned (fail)
         cartTable.getItems().clear();
         updateTotal();
         loadCatalogue();
