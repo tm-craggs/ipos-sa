@@ -82,10 +82,9 @@ public class DatabaseManager {
                 );
             """);
 
-            // table for order the order id and merchantid are as strings idk why but someone should fix it
             st.execute("""
                 CREATE TABLE IF NOT EXISTS orders (
-                    order_id TEXT PRIMARY KEY AUTOINCREMENT,
+                    order_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     merchant_id TEXT NOT NULL,
                     order_date TEXT NOT NULL,
                     order_value REAL NOT NULL,
@@ -351,28 +350,27 @@ public class DatabaseManager {
         try {
             conn.setAutoCommit(false);
 
-            var ps1 = conn.prepareStatement("INSERT INTO orders (merchant_id, order_date, order_value, payment_status) VALUES (?,?,?,?,?)");
+            String orderSql = "INSERT INTO orders (merchant_id, order_date, order_value, payment_status) VALUES (?,?,?,?)";
+
+            var ps1 = conn.prepareStatement(orderSql, Statement.RETURN_GENERATED_KEYS);
             ps1.setString(1, merchantId);
             ps1.setString(2, orderDate);
             ps1.setDouble(3, orderValue);
             ps1.setString(4, "Pending");
             ps1.executeUpdate();
 
-            // stinky hack coming up to get generated order ID as variable
-
-            // set orderId as -1 to represent fail
             int orderId = -1;
-            // generate list of keys that have just been created
             var keys = ps1.getGeneratedKeys();
-            // if there is a key, get the first one
-            if (keys.next()) orderId = keys.getInt(1);
+            if (keys.next()) {
+                orderId = keys.getInt(1);
+            }
             ps1.close();
 
             var ps2 = conn.prepareStatement("INSERT INTO order_items (order_id, item_id, quantity, unit_cost, amount) VALUES (?,?,?,?,?)");
             var ps3 = conn.prepareStatement("UPDATE catalogue SET availability = availability - ? WHERE item_id = ?");
 
             for (OrderItem item : items) {
-                ps2.setString(1, "INV-" + orderId);
+                ps2.setInt(1, orderId);
                 ps2.setInt(2, item.getItemId());
                 ps2.setInt(3, item.getQuantity());
                 ps2.setDouble(4, item.getUnitCost());
@@ -401,6 +399,7 @@ public class DatabaseManager {
             return orderId;
 
         } catch (SQLException e) {
+            e.printStackTrace();
             return -1;
         }
     }
