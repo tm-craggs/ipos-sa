@@ -344,15 +344,15 @@ public class DatabaseManager {
     }
 
     // table for order the order id and merchantid are as strings idk why but someone should fix it
-    public static void submitOrder(String orderid, String merhcantid, String orderdate, double ordervalue, List<OrderItem> items) {
+    public static void submitOrder(String orderId, String merchantId, String orderDate, double orderValue, List<OrderItem> items) {
         try {
             conn.setAutoCommit(false);
 
             var ps1 = conn.prepareStatement("INSERT INTO orders (order_id, merchant_id, order_date, order_value, payment_status) VALUES (?,?,?,?,?)");
-            ps1.setString(1, orderid);
-            ps1.setString(2, merhcantid);
-            ps1.setString(3, orderdate);
-            ps1.setDouble(4, ordervalue);
+            ps1.setString(1, orderId);
+            ps1.setString(2, merchantId);
+            ps1.setString(3, orderDate);
+            ps1.setDouble(4, orderValue);
             ps1.setString(5, "Pending");
             ps1.executeUpdate();
             ps1.close();
@@ -361,7 +361,7 @@ public class DatabaseManager {
             var ps3 = conn.prepareStatement("UPDATE catalogue SET availability = availability - ? WHERE item_id = ?");
 
             for (OrderItem item : items) {
-                ps2.setString(1, orderid);
+                ps2.setString(1, orderId);
                 ps2.setInt(2, item.getItemId());
                 ps2.setInt(3, item.getQuantity());
                 ps2.setDouble(4, item.getUnitCost());
@@ -377,10 +377,10 @@ public class DatabaseManager {
 
 
             var ps4 = conn.prepareStatement("INSERT INTO invoices (invoice_id, merchant_id, amount, invoice_date, payment_status) VALUES (?,?,?,?,?)");
-            ps4.setString(1, "INV-" + orderid);
-            ps4.setString(2, merhcantid);
-            ps4.setDouble(3, ordervalue);
-            ps4.setString(4, orderdate);
+            ps4.setString(1, "INV-" + orderId);
+            ps4.setString(2, merchantId);
+            ps4.setDouble(3, orderValue);
+            ps4.setString(4, orderDate);
             ps4.setString(5, "Pending");
             ps4.executeUpdate();
             ps4.close();
