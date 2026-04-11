@@ -6,12 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class OrderService {
+public class TrackingService {
 
 
     //TODO: Until ORD is done, the API will return placeholder data
     final private List<Order> orderList;
-    public OrderService() {
+    public TrackingService() {
 
         orderList = new ArrayList<>();
 

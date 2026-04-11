@@ -16,13 +16,18 @@ import java.util.Optional;
 public class Server {
 
     public static void start() {
-        OrderService orderService = new OrderService();
+        TrackingService trackingService = new TrackingService();
 
         // create javalin server
         Javalin app = Javalin.create(config -> {
 
             // show connection confirmation at root
             config.routes.get("/", ctx -> ctx.result("IPOS-SA API has been reached"));
+
+            // implement catalogue viewing
+            config.routes.get("/cat", ctx -> {
+                ctx.json(DatabaseManager.getCatalogueItems());
+            });
 
             // implement order tracking. Query takes in orderId, Order status is returned
             config.routes.get("/track", ctx -> {
@@ -40,7 +45,7 @@ public class Server {
                 int id = Integer.parseInt(idParam);
 
                 // check if orderId exists in orderService
-                orderService.getOrder(id).ifPresentOrElse(
+                trackingService.getOrder(id).ifPresentOrElse(
                         // if none exist, return 404
                         ctx::json,
                         () -> ctx.status(404)
@@ -99,8 +104,7 @@ public class Server {
                         "status", "Pending"
                 ));
 
-        });
-
+            });
 
         });
 
