@@ -90,7 +90,8 @@ public class DatabaseManager {
                     order_value REAL NOT NULL,
                     dispatch_date TEXT,
                     delivered_date TEXT,
-                    payment_status TEXT
+                    payment_status TEXT,
+                    delivery_status TEXT
                 );
             """);
 
@@ -350,13 +351,14 @@ public class DatabaseManager {
         try {
             conn.setAutoCommit(false);
 
-            String orderSql = "INSERT INTO orders (merchant_id, order_date, order_value, payment_status) VALUES (?,?,?,?)";
+            String orderSql = "INSERT INTO orders (merchant_id, order_date, order_value, payment_status, delivery_status) VALUES (?,?,?,?,?)";
 
             var ps1 = conn.prepareStatement(orderSql, Statement.RETURN_GENERATED_KEYS);
             ps1.setString(1, merchantId);
             ps1.setString(2, orderDate);
             ps1.setDouble(3, orderValue);
             ps1.setString(4, "Pending");
+            ps1.setString(5, "Awaiting dispatch");
             ps1.executeUpdate();
 
             int orderId = -1;
@@ -446,6 +448,28 @@ public class DatabaseManager {
             System.out.println("Failed to load order items: " + e.getMessage());
         }
         return list;
+    }
+
+    public static Optional<TrackedOrder> getOrder(int orderId) {
+        String sql = "SELECT * FROM orders WHERE order_id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            var rs = ps.executeQuery();
+            if (rs.next()) {
+                return Optional.of(new TrackedOrder(
+                        rs.getString("order_id"),
+                        rs.getString("merchant_id"),
+                        rs.getString("order_date"),
+                        rs.getDouble("order_value"),
+                        rs.getString("dispatch_date"),
+                        rs.getString("delivered_date"),
+                        rs.getString("payment_status")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to get order: " + e.getMessage());
+        }
+        return Optional.empty();
     }
 
     public static List<Invoice> getUnpaidInvoices(String merchantId) {

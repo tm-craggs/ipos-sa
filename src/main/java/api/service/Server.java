@@ -16,8 +16,6 @@ import java.util.Optional;
 public class Server {
 
     public static void start() {
-        TrackingService trackingService = new TrackingService();
-
         // create javalin server
         Javalin app = Javalin.create(config -> {
 
@@ -31,24 +29,28 @@ public class Server {
 
             // implement order tracking. Query takes in orderId, Order status is returned
             config.routes.get("/track", ctx -> {
-
-                // get parameter from URL
                 String idParam = ctx.queryParam("id");
 
-                // check if parameter is not null or empty
                 if (idParam == null || idParam.isEmpty()) {
-                    ctx.status(400);
+                    ctx.status(400).result("No order ID provided");
                     return;
                 }
 
-                // convert orderId to int
-                int id = Integer.parseInt(idParam);
-
-                // check if orderId exists in orderService
-                trackingService.getOrder(id).ifPresentOrElse(
-                        // if none exist, return 404
-                        ctx::json,
-                        () -> ctx.status(404)
+                DatabaseManager.getOrder(Integer.parseInt(idParam)).ifPresentOrElse(
+                        order -> {
+                            List<OrderItem> items = DatabaseManager.getOrderItems(String.valueOf(order.getOrderId()));
+                            ctx.json(Map.of(
+                                    "orderId",        order.getOrderId(),
+                                    "merchantId",     order.getMerchantId(),
+                                    "orderDate",      order.getOrderDate(),
+                                    "orderValue",     order.getOrderValue(),
+                                    "dispatchDate",   order.getDispatchDate(),
+                                    "deliveredDate",  order.getDeliveredDate(),
+                                    "paymentStatus",  order.getPaymentStatus(),
+                                    "items",          items
+                            ));
+                        },
+                        () -> ctx.status(404).result("Order not found")
                 );
             });
 
