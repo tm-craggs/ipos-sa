@@ -7,6 +7,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -14,179 +15,189 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane prefHeight="600" prefWidth="900" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ord.OrderManager">
 
     <top>
-        <AnchorPane prefHeight="20.0" prefWidth="900.0" style="-fx-padding: 10;">
-            <Button text="Main Menu" onAction="#handleMainMenu" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0" />
-            <Label fx:id="balanceLabel" text="Balance: £0.00 / £0.00" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="8.0" />
-        </AnchorPane>
+        <VBox>
+            <ToolBar style="-fx-background-color: #34495e;">
+                <Button onAction="#handleMainMenu" text="← Back to Main Menu" style="-fx-text-fill: white; -fx-background-color: #2c3e50;"/>
+                <Pane HBox.hgrow="ALWAYS" />
+                <Label fx:id="balanceLabel" text="Balance: £0.00 / £0.00" style="-fx-text-fill: white; -fx-padding: 0 10 0 0;" />
+                <Button style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Logout" />
+            </ToolBar>
+        </VBox>
     </top>
 
     <center>
-        <TabPane tabClosingPolicy="UNAVAILABLE">
+        <VBox spacing="15">
+            <padding><Insets top="15" left="20" right="20" bottom="20" /></padding>
+            <Label style="-fx-font-size: 22px; -fx-font-weight: bold;" text="IPOS-SA Order Management" />
+            <Separator />
+            <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
 
-            <Tab text="New Order">
-                <AnchorPane>
-                    <TextField fx:id="searchField" promptText="Search catalogue by name or item ID..." AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                <Tab text="New Order">
+                    <AnchorPane>
+                        <TextField fx:id="searchField" promptText="Search catalogue by name or item ID..." AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
 
-                    <SplitPane dividerPositions="0.6" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+                        <SplitPane dividerPositions="0.6" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
 
-                        <VBox spacing="10">
-                            <padding><Insets bottom="5" left="5" right="5" top="5" /></padding>
-                            <Label text="Catalogue" />
-                            <TableView fx:id="catalogue" VBox.vgrow="ALWAYS">
-                                <columns>
-                                    <TableColumn fx:id="catIdCol" prefWidth="80" text="Item ID">
-                                        <cellValueFactory><PropertyValueFactory property="itemId"/> </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="catDescCol" prefWidth="150" text="Description">
-                                        <cellValueFactory><PropertyValueFactory property="description"/> </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="catPriceCol" prefWidth="112.0" text="Price (£)">
-                                        <cellValueFactory><PropertyValueFactory property="packageCost"/> </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="catAvailCol" prefWidth="171.0" text="Available">
-                                        <cellValueFactory><PropertyValueFactory property="availability"/> </cellValueFactory>
-                                    </TableColumn>
-                                </columns>
-                            </TableView>
-                            <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="Qty:" />
-                                <TextField fx:id="quantityField" prefWidth="60" promptText="0" />
-                                <Button fx:id="addToCartButton" onAction="#handleAddToCart"  text="Add to Cart" />
+                            <VBox spacing="10">
+                                <padding><Insets bottom="5" left="5" right="5" top="5" /></padding>
+                                <Label text="Catalogue" />
+                                <TableView fx:id="catalogue" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="catIdCol" prefWidth="80" text="Item ID">
+                                            <cellValueFactory><PropertyValueFactory property="itemId"/> </cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="catDescCol" prefWidth="150" text="Description">
+                                            <cellValueFactory><PropertyValueFactory property="description"/> </cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="catPriceCol" prefWidth="112.0" text="Price (£)">
+                                            <cellValueFactory><PropertyValueFactory property="packageCost"/> </cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="catAvailCol" prefWidth="171.0" text="Available">
+                                            <cellValueFactory><PropertyValueFactory property="availability"/> </cellValueFactory>
+                                        </TableColumn>
+                                    </columns>
+                                </TableView>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="Qty:" />
+                                    <TextField fx:id="quantityField" prefWidth="60" promptText="0" />
+                                    <Button fx:id="addToCartButton" onAction="#handleAddToCart" text="Add to Cart" />
+                                </HBox>
+                            </VBox>
+
+                            <VBox spacing="10">
+                                <padding><Insets bottom="5" left="5" right="5" top="5" /></padding>
+                                <Label text="Your Order" />
+                                <TableView fx:id="cartTable" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="cartDescCol" prefWidth="114.0" text="Item">
+                                            <cellValueFactory><PropertyValueFactory property="description"/> </cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="cartQtyCol" prefWidth="71.0" text="Qty">
+                                            <cellValueFactory><PropertyValueFactory property="quantity"/> </cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="cartUnitCol" prefWidth="50.0" text="Unit £">
+                                            <cellValueFactory><PropertyValueFactory property="unitCost"/> </cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="cartTotalCol" prefWidth="102.0" text="Total £">
+                                            <cellValueFactory><PropertyValueFactory property="amount"/> </cellValueFactory>
+                                        </TableColumn>
+                                    </columns>
+                                </TableView>
+                                <Button fx:id="removeFromCartButton" onAction="#handleRemoveFromCart" text="Remove Selected" />
+                                <Separator />
+                                <Label fx:id="grandTotalLabel" style="-fx-font-size: 14; -fx-font-weight: bold;" text="Grand Total: £0.00" />
+                                <Button fx:id="submitOrderButton" maxWidth="Infinity" onAction="#handleSubmitOrder" text="Submit Order" />
+                            </VBox>
+                        </SplitPane>
+                    </AnchorPane>
+                </Tab>
+
+                <Tab text="Tracking">
+                    <AnchorPane>
+                        <SplitPane dividerPositions="0.5" orientation="VERTICAL" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+
+                            <VBox spacing="5">
+                                <padding><Insets bottom="5" left="5" right="5" top="5" /></padding>
+                                <Label text="Your Orders" />
+                                <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="ordIdCol" prefWidth="90" text="Order ID">
+                                            <cellValueFactory><PropertyValueFactory property="orderId"/></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="ordDateCol" prefWidth="90" text="Date">
+                                            <cellValueFactory><PropertyValueFactory property="orderDate"/></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="ordValueCol" prefWidth="80" text="Value (£)">
+                                            <cellValueFactory><PropertyValueFactory property="orderValue"/></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="ordDispCol" prefWidth="90" text="Dispatched">
+                                            <cellValueFactory><PropertyValueFactory property="dispatchDate"/></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="ordDelCol" prefWidth="90" text="Delivered">
+                                            <cellValueFactory><PropertyValueFactory property="deliveredDate"/></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="ordPayCol" prefWidth="80" text="Payment">
+                                            <cellValueFactory><PropertyValueFactory property="paymentStatus"/></cellValueFactory>
+                                        </TableColumn>
+                                    </columns>
+                                </TableView>
+                            </VBox>
+
+                            <VBox spacing="5">
+                                <padding><Insets bottom="5" left="5" right="5" top="5" /></padding>
+                                <Label fx:id="orderInfoLabel" text="Select an order above to see details" />
+                                <TableView fx:id="orderDetailsTable" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="detItemCol" prefWidth="80" text="Item ID">
+                                            <cellValueFactory><PropertyValueFactory property="itemId"/></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="detDescCol" prefWidth="160" text="Description">
+                                            <cellValueFactory><PropertyValueFactory property="description"/></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="detQtyCol" prefWidth="50" text="Qty">
+                                            <cellValueFactory><PropertyValueFactory property="quantity"/></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="detUnitCol" prefWidth="70" text="Unit £">
+                                            <cellValueFactory><PropertyValueFactory property="unitCost"/></cellValueFactory>
+                                        </TableColumn>
+                                        <TableColumn fx:id="detAmtCol" prefWidth="80" text="Amount £">
+                                            <cellValueFactory><PropertyValueFactory property="amount"/></cellValueFactory>
+                                        </TableColumn>
+                                    </columns>
+                                </TableView>
+                            </VBox>
+                        </SplitPane>
+                    </AnchorPane>
+                </Tab>
+
+                <Tab text="Balance and Invoices">
+                    <AnchorPane>
+                        <VBox spacing="15" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                            <padding><Insets bottom="10" left="10" right="10" top="10" /></padding>
+
+                            <HBox spacing="20">
+                                <VBox style="-fx-border-color: #ccc; -fx-border-radius: 4; -fx-padding: 15;" HBox.hgrow="ALWAYS">
+                                    <Label style="-fx-text-fill: grey; -fx-font-size: 11;" text="Credit Limit" />
+                                    <Label fx:id="creditLimitLabel" style="-fx-font-size: 20;" text="£0.00" />
+                                </VBox>
+                                <VBox style="-fx-border-color: #ccc; -fx-border-radius: 4; -fx-padding: 15;" HBox.hgrow="ALWAYS">
+                                    <Label style="-fx-text-fill: grey; -fx-font-size: 11;" text="Outstanding Balance" />
+                                    <Label fx:id="outstandingLabel" style="-fx-font-size: 20; -fx-text-fill: #d4a017;" text="£0.00" />
+                                </VBox>
+                                <VBox style="-fx-border-color: #ccc; -fx-border-radius: 4; -fx-padding: 15;" HBox.hgrow="ALWAYS">
+                                    <Label style="-fx-text-fill: grey; -fx-font-size: 11;" text="Available Credit" />
+                                    <Label fx:id="availableCreditLabel" style="-fx-font-size: 20; -fx-text-fill: green;" text="£0.00" />
+                                </VBox>
                             </HBox>
-                        </VBox>
 
-                        <VBox spacing="10">
-                            <padding><Insets bottom="5" left="5" right="5" top="5" /></padding>
-                            <Label text="Your Order" />
-                            <TableView fx:id="cartTable" VBox.vgrow="ALWAYS">
+                            <Label style="-fx-font-weight: bold; -fx-font-size: 13;" text="Unpaid Invoices" />
+                            <TableView fx:id="invoicesTable" VBox.vgrow="ALWAYS">
                                 <columns>
-                                    <TableColumn fx:id="cartDescCol" prefWidth="114.0" text="Item">
-                                        <cellValueFactory><PropertyValueFactory property="description"/> </cellValueFactory>
+                                    <TableColumn fx:id="invIdCol" prefWidth="120" text="Invoice ID">
+                                        <cellValueFactory><PropertyValueFactory property="invoiceId"/></cellValueFactory>
                                     </TableColumn>
-                                    <TableColumn fx:id="cartQtyCol" prefWidth="71.0" text="Qty">
-                                        <cellValueFactory><PropertyValueFactory property="quantity"/> </cellValueFactory>
+                                    <TableColumn fx:id="invDateCol" prefWidth="100" text="Date">
+                                        <cellValueFactory><PropertyValueFactory property="invoiceDate"/></cellValueFactory>
                                     </TableColumn>
-                                    <TableColumn fx:id="cartUnitCol" prefWidth="50.0" text="Unit £">
-                                        <cellValueFactory><PropertyValueFactory property="unitCost"/> </cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="cartTotalCol" prefWidth="102.0" text="Total £">
-                                        <cellValueFactory><PropertyValueFactory property="amount"/> </cellValueFactory>
-                                    </TableColumn>
-                                </columns>
-                            </TableView>
-                            <Button fx:id="removeFromCartButton" onAction="#handleRemoveFromCart" text="Remove Selected" />
-                            <Separator />
-                            <Label fx:id="grandTotalLabel" style="-fx-font-size: 14; -fx-font-weight: bold;" text="Grand Total: £0.00" />
-                            <Button fx:id="submitOrderButton" maxWidth="Infinity"  onAction="#handleSubmitOrder"   text="Submit Order" />
-                        </VBox>
-                    </SplitPane>
-                </AnchorPane>
-            </Tab>
-
-            <Tab text="Tracking">
-                <AnchorPane>
-                    <SplitPane dividerPositions="0.5" orientation="VERTICAL" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-
-                        <VBox spacing="5">
-                            <padding><Insets bottom="5" left="5" right="5" top="5" /></padding>
-                            <Label text="Your Orders" />
-                            <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS">
-                                <columns>
-                                    <TableColumn fx:id="ordIdCol" prefWidth="90" text="Order ID">
-                                        <cellValueFactory><PropertyValueFactory property="orderId"/></cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="ordDateCol" prefWidth="90" text="Date">
-                                        <cellValueFactory><PropertyValueFactory property="orderDate"/></cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="ordValueCol" prefWidth="80" text="Value (£)">
-                                        <cellValueFactory><PropertyValueFactory property="orderValue"/></cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="ordDispCol" prefWidth="90" text="Dispatched">
-                                        <cellValueFactory><PropertyValueFactory property="dispatchDate"/></cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="ordDelCol" prefWidth="90" text="Delivered">
-                                        <cellValueFactory><PropertyValueFactory property="deliveredDate"/></cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="ordPayCol" prefWidth="80" text="Payment">
-                                        <cellValueFactory><PropertyValueFactory property="paymentStatus"/></cellValueFactory>
-                                    </TableColumn>
-                                </columns>
-                            </TableView>
-                        </VBox>
-
-                        <VBox spacing="5">
-                            <padding><Insets bottom="5" left="5" right="5" top="5" /></padding>
-                            <Label fx:id="orderInfoLabel" text="Select an order above to see details" />
-                            <TableView fx:id="orderDetailsTable" VBox.vgrow="ALWAYS">
-                                <columns>
-                                    <TableColumn fx:id="detItemCol" prefWidth="80" text="Item ID">
-                                        <cellValueFactory><PropertyValueFactory property="itemId"/></cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="detDescCol" prefWidth="160" text="Description">
-                                        <cellValueFactory><PropertyValueFactory property="description"/></cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="detQtyCol" prefWidth="50" text="Qty">
-                                        <cellValueFactory><PropertyValueFactory property="quantity"/></cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="detUnitCol" prefWidth="70" text="Unit £">
-                                        <cellValueFactory><PropertyValueFactory property="unitCost"/></cellValueFactory>
-                                    </TableColumn>
-                                    <TableColumn fx:id="detAmtCol" prefWidth="80" text="Amount £">
+                                    <TableColumn fx:id="invAmtCol" prefWidth="100" text="Amount (£)">
                                         <cellValueFactory><PropertyValueFactory property="amount"/></cellValueFactory>
                                     </TableColumn>
+                                    <TableColumn fx:id="invStatusCol" prefWidth="100" text="Status">
+                                        <cellValueFactory><PropertyValueFactory property="status"/></cellValueFactory>
+                                    </TableColumn>
                                 </columns>
                             </TableView>
                         </VBox>
-                    </SplitPane>
-                </AnchorPane>
-            </Tab>
+                    </AnchorPane>
+                </Tab>
 
-            <Tab text="Balance and Invoices">
-                <AnchorPane>
-                    <VBox spacing="15" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                        <padding><Insets bottom="10" left="10" right="10" top="10" /></padding>
-
-                        <HBox spacing="20">
-                            <VBox style="-fx-border-color: #ccc; -fx-border-radius: 4; -fx-padding: 15;" HBox.hgrow="ALWAYS">
-                                <Label style="-fx-text-fill: grey; -fx-font-size: 11;" text="Credit Limit" />
-                                <Label fx:id="creditLimitLabel" style="-fx-font-size: 20;" text="£0.00" />
-                            </VBox>
-                            <VBox style="-fx-border-color: #ccc; -fx-border-radius: 4; -fx-padding: 15;" HBox.hgrow="ALWAYS">
-                                <Label style="-fx-text-fill: grey; -fx-font-size: 11;" text="Outstanding Balance" />
-                                <Label fx:id="outstandingLabel" style="-fx-font-size: 20; -fx-text-fill: #d4a017;" text="£0.00" />
-                            </VBox>
-                            <VBox style="-fx-border-color: #ccc; -fx-border-radius: 4; -fx-padding: 15;" HBox.hgrow="ALWAYS">
-                                <Label style="-fx-text-fill: grey; -fx-font-size: 11;" text="Available Credit" />
-                                <Label fx:id="availableCreditLabel" style="-fx-font-size: 20; -fx-text-fill: green;" text="£0.00" />
-                            </VBox>
-                        </HBox>
-
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 13;" text="Unpaid Invoices" />
-                        <TableView fx:id="invoicesTable" VBox.vgrow="ALWAYS">
-                            <columns>
-                                <TableColumn fx:id="invIdCol" prefWidth="120" text="Invoice ID">
-                                    <cellValueFactory><PropertyValueFactory property="invoiceId"/></cellValueFactory>
-                                </TableColumn>
-                                <TableColumn fx:id="invDateCol" prefWidth="100" text="Date">
-                                    <cellValueFactory><PropertyValueFactory property="invoiceDate"/></cellValueFactory>
-                                </TableColumn>
-                                <TableColumn fx:id="invAmtCol" prefWidth="100" text="Amount (£)">
-                                    <cellValueFactory><PropertyValueFactory property="amount"/></cellValueFactory>
-                                </TableColumn>
-                                <TableColumn fx:id="invStatusCol" prefWidth="100" text="Status">
-                                    <cellValueFactory><PropertyValueFactory property="status"/></cellValueFactory>
-                                </TableColumn>
-                            </columns>
-                        </TableView>
-                    </VBox>
-                </AnchorPane>
-            </Tab>
-
-        </TabPane>
+            </TabPane>
+        </VBox>
     </center>
 </BorderPane>
