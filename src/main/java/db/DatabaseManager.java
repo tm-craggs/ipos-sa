@@ -45,7 +45,8 @@ public class DatabaseManager {
                     password TEXT NOT NULL,
                     type TEXT NULL,
                     credit_limit REAL,
-                    discount_plan TEXT
+                    discount_plan TEXT,
+                    status TEXT
                 );
             """);
 
@@ -140,14 +141,16 @@ public class DatabaseManager {
         }
     }
 
+    // add merchant routine
     public static void addUser(String username, String password, String type, float creditLimit, String discountPlan) {
-        String sql = "INSERT INTO users (username, password, type, credit_limit, discount_plan) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (username, password, type, credit_limit, discount_plan, status) VALUES (?, ?, ?, ?, ?, ?)";
         try (var pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setString(3, type);
             pstmt.setFloat(4, creditLimit);
             pstmt.setString(5, discountPlan);
+            pstmt.setString(6, "Normal");
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error adding full user: " + e.getMessage());
