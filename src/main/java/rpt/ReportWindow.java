@@ -1,11 +1,14 @@
 package rpt;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.print.PrinterJob;
 import javafx.scene.control.Alert;
+import ipos.sa.SceneSwitcher;
+import ipos.sa.UserSession;
 
 public class ReportWindow {
 
@@ -102,6 +105,17 @@ job.endJob();
 showError("Printing failed.");
 }
 }
+}
+
+@FXML
+private void handleBack(ActionEvent event) {
+    SceneSwitcher.switchScene(event, "/ipos/sa/main-menu.fxml", "IPOS-SA - Main Menu");
+}
+
+@FXML
+private void handleLogout(ActionEvent event) {
+    UserSession.logout();
+    SceneSwitcher.switchScene(event, "/ipos/sa/login-window.fxml", "Login");
 }
 
 private void showError(String message) {
