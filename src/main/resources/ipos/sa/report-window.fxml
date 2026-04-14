@@ -2,63 +2,78 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox spacing="15" alignment="TOP_CENTER" xmlns:fx="http://javafx.com/fxml"
-fx:controller="rpt.ReportWindow" prefWidth="700" prefHeight="550"
-style="-fx-padding: 20;">
+<VBox prefHeight="600.0" prefWidth="750.0" spacing="0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+fx:controller="rpt.ReportWindow">
 
-<Label text="IPOS Reports"
-style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+    <ToolBar style="-fx-background-color: #34495e;">
+        <Button onAction="#handleBack" text="← Back to Main Menu" style="-fx-text-fill: white; -fx-background-color: #2c3e50;"/>
+        <Pane HBox.hgrow="ALWAYS" />
+        <Button onAction="#handleLogout" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Logout" />
+    </ToolBar>
 
-<VBox spacing="10" prefWidth="500">
+    <VBox spacing="15" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="20" left="20" right="20" top="20" />
+        </padding>
 
-<HBox spacing="10" alignment="CENTER_LEFT">
-<Label text="Report Type:" prefWidth="120"/>
-<ChoiceBox fx:id="reportTypeChoice" prefWidth="250"/>
-</HBox>
+        <Label text="IPOS Reports"
+        style="-fx-font-size: 22px; -fx-font-weight: bold;" />
 
-<HBox spacing="10" alignment="CENTER_LEFT">
-<Label text="Start Date:" prefWidth="120"/>
-<TextField fx:id="startDateField" promptText="YYYY-MM-DD" prefWidth="120"/>
-<Label text="End Date:" />
-<TextField fx:id="endDateField" promptText="YYYY-MM-DD" prefWidth="120"/>
-</HBox>
+        <Separator />
 
-<HBox spacing="10" alignment="CENTER_LEFT">
-<Label text="Merchant ID:" prefWidth="120"/>
-<TextField fx:id="merchantIdField" promptText="Optional" prefWidth="250"/>
-</HBox>
+        <VBox spacing="10" prefWidth="500">
 
-<HBox spacing="10" alignment="CENTER_LEFT">
-<Label text="Invoice ID:" prefWidth="120"/>
-<TextField fx:id="invoiceIdField" promptText="For invoice details" prefWidth="250"/>
-</HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Report Type:" prefWidth="120"/>
+                <ChoiceBox fx:id="reportTypeChoice" prefWidth="250"/>
+            </HBox>
 
-</VBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Start Date:" prefWidth="120"/>
+                <TextField fx:id="startDateField" promptText="YYYY-MM-DD" prefWidth="120"/>
+                <Label text="End Date:" />
+                <TextField fx:id="endDateField" promptText="YYYY-MM-DD" prefWidth="120"/>
+            </HBox>
 
-<HBox spacing="10" alignment="CENTER">
-<Button text="Generate Report"
-onAction="#handleGenerateReport"
-prefWidth="180"
-style="-fx-font-weight: bold;" />
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Merchant ID:" prefWidth="120"/>
+                <TextField fx:id="merchantIdField" promptText="Optional" prefWidth="250"/>
+            </HBox>
 
-<Button text="View Invoice Details"
-onAction="#handleInvoiceDetails"
-prefWidth="180"
-style="-fx-font-weight: bold;" />
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Invoice ID:" prefWidth="120"/>
+                <TextField fx:id="invoiceIdField" promptText="For invoice details" prefWidth="250"/>
+            </HBox>
 
-<Button text="Print Report"
-onAction="#handlePrint"
-prefWidth="180"
-style="-fx-font-weight: bold;" />
-</HBox>
+        </VBox>
 
-<VBox spacing="5" prefWidth="600">
-<Label text="Report Output:" style="-fx-font-weight: bold;" />
-<TextArea fx:id="reportOutputArea"
-prefHeight="300"
-wrapText="true"
-editable="false"/>
-</VBox>
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="Generate Report"
+            onAction="#handleGenerateReport"
+            prefWidth="180"
+            style="-fx-font-weight: bold;" />
+
+            <Button text="View Invoice Details"
+            onAction="#handleInvoiceDetails"
+            prefWidth="180"
+            style="-fx-font-weight: bold;" />
+
+            <Button text="Print Report"
+            onAction="#handlePrint"
+            prefWidth="180"
+            style="-fx-font-weight: bold;" />
+        </HBox>
+
+        <VBox spacing="5" prefWidth="600" VBox.vgrow="ALWAYS">
+            <Label text="Report Output:" style="-fx-font-weight: bold;" />
+            <TextArea fx:id="reportOutputArea"
+            VBox.vgrow="ALWAYS"
+            wrapText="true"
+            editable="false"/>
+        </VBox>
+
+    </VBox>
 
 </VBox>
