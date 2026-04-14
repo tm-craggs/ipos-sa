@@ -101,8 +101,11 @@ public class MainMenuController {
     }
 
     @FXML
-    private void handleOrd() {
+    private void handleOrd(ActionEvent event) {
         System.out.println("Opening IPOS-ORD...");
+        try {
+            SceneSwitcher.switchScene(event, "/ipos-sa-ord/ORD.fxml", "IPOS-ORD");
+        } catch (Exception e) {e.printStackTrace();}
     }
 
     @FXML

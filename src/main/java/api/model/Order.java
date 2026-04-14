@@ -2,28 +2,27 @@ package api.model;
 
 public class Order {
 
-    final private int orderId;
-    final private int itemId;
-    private String orderStatus;
+    private final int orderId;
+    private final String merchantId;
+    private final String orderDate;
+    private final double orderValue;
+    private final String paymentStatus;
+    private final String dispatchStatus;
 
-    public Order(int orderId, int itemId, String orderStatus) {
+    public Order(int orderId, String merchantId, String orderDate, double orderValue, String paymentStatus, String dispatchStatus) {
         this.orderId = orderId;
-        this.itemId = itemId;
-        this.orderStatus = orderStatus;
+        this.merchantId = merchantId;
+        this.orderDate = orderDate;
+        this.orderValue = orderValue;
+        this.paymentStatus = paymentStatus;
+        this.dispatchStatus = dispatchStatus;
     }
 
-    public int getId() {
-        return orderId;
-    }
-    public int getItemId() {
-        return itemId;
-    }
-    public String getOrderStatus() {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(String orderStatus) {
-        this.orderStatus = orderStatus;
-    }
+    public int getOrderId()          { return orderId; }
+    public String getMerchantId()    { return merchantId; }
+    public String getOrderDate()     { return orderDate; }
+    public double getOrderValue()    { return orderValue; }
+    public String getPaymentStatus() { return paymentStatus; }
+    public String getDispatchStatus(){ return dispatchStatus; }
 
 }
