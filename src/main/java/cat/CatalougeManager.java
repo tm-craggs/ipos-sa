@@ -7,9 +7,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.List;
@@ -282,20 +284,21 @@ public class CatalougeManager {
 
     @FXML
     private void handleLowStock(ActionEvent event) {
-        try{
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/cat/StockLimitReport.fxml"));
             Parent root = loader.load();
 
-            Dialog<ButtonType> dialog = new Dialog<>();
-            dialog.setTitle("Low Stock Report");
-            dialog.getDialogPane().setContent(root);
-            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-            dialog.getDialogPane().lookupButton(ButtonType.CLOSE).setVisible(false);
-            dialog.showAndWait();
+            Stage reportStage = new Stage();
+            reportStage.setTitle("Stock Limit Report");
+
+            Scene scene = new Scene(root);
+            reportStage.setScene(scene);
+
+            reportStage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     @FXML
