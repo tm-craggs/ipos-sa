@@ -6,11 +6,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.List;
@@ -284,7 +282,7 @@ public class CatalougeManager {
     @FXML
     private void handleLowStock(ActionEvent event) {
         try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipos-sa-cat/StockLimitReport.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cat/StockLimitReport.fxml"));
             Parent root = loader.load();
 
             Dialog<ButtonType> dialog = new Dialog<>();

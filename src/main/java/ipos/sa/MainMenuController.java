@@ -1,16 +1,10 @@
 package ipos.sa;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 
 public class MainMenuController {
@@ -96,7 +90,7 @@ public class MainMenuController {
     private void handleCat(ActionEvent event) {
         System.out.println("Opening IPOS-CAT...");
         try {
-            SceneSwitcher.switchScene(event, "/ipos-sa-cat/cat-stockmanager.fxml", "IPOS-ACC");
+            SceneSwitcher.switchScene(event, "/cat/cat-stockmanager.fxml", "IPOS-ACC");
         } catch (Exception e) {e.printStackTrace();}
     }
 
@@ -104,14 +98,14 @@ public class MainMenuController {
     private void handleOrd(ActionEvent event) {
         System.out.println("Opening IPOS-ORD...");
         try {
-            SceneSwitcher.switchScene(event, "/ipos-sa-ord/ORD.fxml", "IPOS-ORD");
+            SceneSwitcher.switchScene(event, "/ord/ORD.fxml", "IPOS-ORD");
         } catch (Exception e) {e.printStackTrace();}
     }
 
     @FXML
     private void handleRpt(ActionEvent event) {
         System.out.println("Opening IPOS-RPT...");
-        SceneSwitcher.switchScene(event, "/ipos/sa/report-window.fxml", "IPOS-RPT");
+        SceneSwitcher.switchScene(event, "/rpt/report-window.fxml", "IPOS-RPT");
     }
     private void closeWindow() {
         Stage stage = (Stage) loggedInUserLabel.getScene().getWindow();
