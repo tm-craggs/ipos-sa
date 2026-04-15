@@ -21,79 +21,86 @@
         <Separator />
 
         <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
-            <tabs>
-                <Tab text="Direct User Entry">
-                    <ScrollPane fitToWidth="true">
-                        <VBox spacing="20" style="-fx-background-color: white;">
-                            <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+            <Tab text="Direct User Entry">
+                <ScrollPane fitToWidth="true">
+                    <VBox spacing="20" style="-fx-background-color: white;">
+                        <padding>
+                            <Insets bottom="20" left="20" right="20" top="20"/>
+                        </padding>
 
-                            <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Credentials" />
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Credentials"/>
+                        <GridPane hgap="10" vgap="12">
+                            <Label text="Account Type:" GridPane.columnIndex="0"/>
+                            <ChoiceBox fx:id="roleChoice" prefWidth="200.0" GridPane.columnIndex="1"/>
+
+                            <Label text="Username:" GridPane.rowIndex="1"/>
+                            <TextField fx:id="usernameField" promptText="e.g. j.smith@pharmacy.com"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                            <Label text="Password:" GridPane.rowIndex="2"/>
+                            <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        </GridPane>
+
+                        <Separator/>
+
+                        <VBox fx:id="merchantFields" spacing="15">
+                            <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Merchant Settings"/>
                             <GridPane hgap="10" vgap="12">
-                                <Label text="Account Type:" GridPane.columnIndex="0" />
-                                <ChoiceBox fx:id="roleChoice" prefWidth="200.0" GridPane.columnIndex="1" />
+                                <Label text="Credit Limit (£):"/>
+                                <TextField fx:id="limitField" promptText="5000" GridPane.columnIndex="1"/>
 
-                                <Label text="Username:" GridPane.rowIndex="1" />
-                                <TextField fx:id="usernameField" promptText="e.g. j.smith@pharmacy.com" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-
-                                <Label text="Password:" GridPane.rowIndex="2" />
-                                <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                <Label text="Discount Plan:" GridPane.rowIndex="1"/>
+                                <HBox spacing="20" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <RadioButton fx:id="fixedRadio" selected="true" text="Fixed"/>
+                                    <RadioButton fx:id="flexibleRadio" text="Flexible"/>
+                                </HBox>
                             </GridPane>
-
-                            <Separator />
-
-                            <VBox fx:id="merchantFields" spacing="15">
-                                <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Merchant Settings" />
-                                <GridPane hgap="10" vgap="12">
-                                    <Label text="Credit Limit (£):" />
-                                    <TextField fx:id="limitField" promptText="5000" GridPane.columnIndex="1" />
-
-                                    <Label text="Discount Plan:" GridPane.rowIndex="1" />
-                                    <HBox spacing="20" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                        <RadioButton fx:id="fixedRadio" selected="true" text="Fixed" />
-                                        <RadioButton fx:id="flexibleRadio" text="Flexible" />
-                                    </HBox>
-                                </GridPane>
-                            </VBox>
-
-                            <Region VBox.vgrow="ALWAYS" />
-                            <Button fx:id="saveButton" onAction="#handleCreateAccount" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" text="Create Account" />
                         </VBox>
-                    </ScrollPane>
-                </Tab>
 
-                <Tab text="Pending Applications">
-                    <VBox spacing="10">
-                        <padding><Insets bottom="10" left="10" right="10" top="10" /></padding>
-                        <TableView fx:id="pendingTable" VBox.vgrow="ALWAYS">
-                            <columns>
-                                <TableColumn fx:id="colCompany" prefWidth="200.0" text="Company Name" />
-                                <TableColumn fx:id="colReg" prefWidth="150.0" text="Reg No" />
-                                <TableColumn fx:id="colEmail" prefWidth="250.0" text="Email" />
-                            </columns>
-                        </TableView>
-                        <HBox alignment="CENTER_RIGHT" spacing="10">
-                            <Button onAction="#handleReviewApp" prefHeight="30.0" text="Review &amp; Approve Selected" />
-                        </HBox>
+                        <Region VBox.vgrow="ALWAYS"/>
+                        <Button fx:id="saveButton" onAction="#handleCreateAccount" prefHeight="40.0" prefWidth="200.0"
+                                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;"
+                                text="Create Account"/>
                     </VBox>
-                </Tab>
-                <Tab text="Manage Accounts">
-                    <VBox spacing="10">
-                        <padding><Insets bottom="10" left="10" right="10" top="10" /></padding>
-                        <TableView fx:id="pendingTable" VBox.vgrow="ALWAYS">
-                            <columns>
-                                <TableColumn fx:id="colId" prefWidth="50" text="ID" />
-                                <TableColumn fx:id="colUser" prefWidth="220.0" text="Username" />
-                                <TableColumn fx:id="colType" prefWidth="220.0" text="Account Type" />
-                                <TableColumn fx:id="colStatus" prefWidth="220.0" text="Account Status" />
-                            </columns>
-                        </TableView>
-                        <HBox alignment="CENTER_RIGHT" spacing="10">
-                            <Button onAction="#handleReviewApp" prefHeight="30.0" text="Change Status" />
-                            <Button prefHeight="30.0" text="Delete Account" />
-                        </HBox>
-                    </VBox>
-                </Tab>
-            </tabs>
+                </ScrollPane>
+            </Tab>
+
+            <Tab text="Pending Applications">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets bottom="10" left="10" right="10" top="10"/>
+                    </padding>
+                    <TableView fx:id="pendingTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colCompany" prefWidth="200.0" text="Company Name"/>
+                            <TableColumn fx:id="colReg" prefWidth="150.0" text="Reg No"/>
+                            <TableColumn fx:id="colEmail" prefWidth="250.0" text="Email"/>
+                        </columns>
+                    </TableView>
+                    <HBox alignment="CENTER_RIGHT" spacing="10">
+                        <Button onAction="#handleReviewApp" prefHeight="30.0" text="Review &amp; Approve Selected"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+            <Tab text="Manage Accounts">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets bottom="10" left="10" right="10" top="10"/>
+                    </padding>
+                    <TableView fx:id="pendingTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colId" prefWidth="50" text="ID"/>
+                            <TableColumn fx:id="colUser" prefWidth="220.0" text="Username"/>
+                            <TableColumn fx:id="colType" prefWidth="220.0" text="Account Type"/>
+                            <TableColumn fx:id="colStatus" prefWidth="220.0" text="Account Status"/>
+                        </columns>
+                    </TableView>
+                    <HBox alignment="CENTER_RIGHT" spacing="10">
+                        <Button onAction="#handleReviewApp" prefHeight="30.0" text="Change Status"/>
+                        <Button prefHeight="30.0" text="Delete Account"/>
+                    </HBox>
+                </VBox>
+            </Tab>
         </TabPane>
     </VBox>
 </VBox>

@@ -2,6 +2,7 @@ package cat;
 
 import db.DatabaseManager;
 import ipos.sa.SceneSwitcher;
+import ipos.sa.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.event.ActionEvent;
@@ -298,12 +299,23 @@ public class CatalougeManager {
     }
 
     @FXML
-    private void handleMainMenu(ActionEvent event) {
-        try {
-            SceneSwitcher.switchScene(event, "main-menu.fxml", "IPOS Main Menu");
+    private void handleLogout(ActionEvent event) {
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        // confirm logout
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to logout?", ButtonType.YES, ButtonType.NO);
+        confirm.showAndWait();
+
+        // if user confirms, logout UserSession and return to login screen
+        if (confirm.getResult() == ButtonType.YES) {
+            UserSession.logout();
+            SceneSwitcher.switchScene(event, "/ipos/sa/login-window.fxml", "Login");
         }
     }
+
+    @FXML
+    private void handleBack(ActionEvent event) {
+        // switch back to main menu
+        SceneSwitcher.switchScene(event, "/ipos/sa/main-menu.fxml", "IPOS-SA - Main Menu");
+    }
+
 }

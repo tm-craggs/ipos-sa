@@ -33,18 +33,16 @@
     </center>
     <top>
         <HBox BorderPane.alignment="CENTER">
-            <children>
-                <AnchorPane prefHeight="47.0" prefWidth="993.0">
-                    <children>
-                        <Button layoutX="893.0" layoutY="17.0" onAction="#writeExcel" mnemonicParsing="false" text="Export as CSV" />
-                        <Text layoutX="285.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Stock Limit Report" textAlignment="CENTER" wrappingWidth="423.1953125">
-                            <font>
-                                <Font name="Calibri" size="44.0" />
-                            </font>
-                        </Text>
-                    </children>
-                </AnchorPane>
-            </children>
+            <AnchorPane prefHeight="47.0" prefWidth="993.0">
+                <Button layoutX="893.0" layoutY="17.0" onAction="#writeExcel" mnemonicParsing="false"
+                        text="Export as CSV"/>
+                <Text layoutX="285.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                      text="Stock Limit Report" textAlignment="CENTER" wrappingWidth="423.1953125">
+                    <font>
+                        <Font name="Calibri" size="44.0"/>
+                    </font>
+                </Text>
+            </AnchorPane>
         </HBox>
     </top>
 </BorderPane>

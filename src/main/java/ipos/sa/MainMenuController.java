@@ -90,7 +90,7 @@ public class MainMenuController {
     private void handleCat(ActionEvent event) {
         System.out.println("Opening IPOS-CAT...");
         try {
-            SceneSwitcher.switchScene(event, "/cat/cat-stockmanager.fxml", "IPOS-ACC");
+            SceneSwitcher.switchScene(event, "/cat/cat-stockmanager.fxml", "IPOS-CAT");
         } catch (Exception e) {e.printStackTrace();}
     }
 
