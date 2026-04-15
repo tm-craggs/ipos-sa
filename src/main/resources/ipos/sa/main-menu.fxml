@@ -30,7 +30,7 @@
 
         <Region HBox.hgrow="ALWAYS"/>
 
-        <Button mnemonicParsing="false" onAction="#handleLogout" text="Log Out"
+        <Button mnemonicParsing="false" onAction="#handleLogout" text="Logout"
                 style="-fx-background-color: #ff4c4c; -fx-text-fill: white;"/>
     </HBox>
 
