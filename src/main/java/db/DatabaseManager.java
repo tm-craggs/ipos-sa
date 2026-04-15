@@ -53,7 +53,7 @@ public class DatabaseManager {
             // seed first user into users database
             st.execute("""
                 INSERT OR IGNORE INTO users (username, password, type)
-                VALUES ('director', 'director', 'DIRECTOR')
+                VALUES ('director', 'director', 'Director')
             """);
 
             // adding a database for table for ipos-sa-cat
