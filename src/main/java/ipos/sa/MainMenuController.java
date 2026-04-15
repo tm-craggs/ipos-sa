@@ -33,6 +33,8 @@ public class MainMenuController {
         if (type == null) return;
         type = type.toLowerCase();
 
+        System.out.println(type);
+
         switch (type) {
 
             case "director":
@@ -51,9 +53,11 @@ public class MainMenuController {
             case "manager":
                 showButton(rptButton);
                 showButton(accButton);
+                break;
 
             default:
                 System.out.println("Unrecognised role, no subsystems activated");
+                break;
         }
 
 
@@ -68,8 +72,6 @@ public class MainMenuController {
     private void handleLogout(ActionEvent event) {
         try {
             UserSession.logout();
-            System.out.println("Logging out...");
-
             SceneSwitcher.switchScene(event, "login-window.fxml", "Login");
 
         } catch (Exception e) {
@@ -81,14 +83,12 @@ public class MainMenuController {
     @FXML
     private void handleAcc(ActionEvent event) {
 
-        System.out.println("Opening IPOS-ACC...");
         SceneSwitcher.switchScene(event, "/acc/acc-window.fxml", "IPOS-ACC");
 
     }
 
     @FXML
     private void handleCat(ActionEvent event) {
-        System.out.println("Opening IPOS-CAT...");
         try {
             SceneSwitcher.switchScene(event, "/cat/cat-stockmanager.fxml", "IPOS-CAT");
         } catch (Exception e) {e.printStackTrace();}
@@ -96,7 +96,6 @@ public class MainMenuController {
 
     @FXML
     private void handleOrd(ActionEvent event) {
-        System.out.println("Opening IPOS-ORD...");
         try {
             SceneSwitcher.switchScene(event, "/ord/ORD.fxml", "IPOS-ORD");
         } catch (Exception e) {e.printStackTrace();}
@@ -104,7 +103,6 @@ public class MainMenuController {
 
     @FXML
     private void handleRpt(ActionEvent event) {
-        System.out.println("Opening IPOS-RPT...");
         SceneSwitcher.switchScene(event, "/rpt/report-window.fxml", "IPOS-RPT");
     }
     private void closeWindow() {
