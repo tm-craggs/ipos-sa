@@ -1,5 +1,6 @@
 package db;
 
+import acc.UserAccount;
 import cat.CatalogueItem;
 import cat.StockLowLevel;
 import ord.Invoice;
@@ -154,6 +155,60 @@ public class DatabaseManager {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error adding full user: " + e.getMessage());
+        }
+    }
+
+
+    public static List<UserAccount> getUsers(String callerRole) {
+        List<UserAccount> list = new ArrayList<>();
+        String sql = callerRole.equals("Director")
+                ? "SELECT id, username, type, status FROM users WHERE username != 'director'"
+                : "SELECT id, username, type, status FROM users WHERE type IN ('Manager', 'Merchant')";
+        try (var stmt = conn.createStatement();
+             var rs   = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                list.add(new UserAccount(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("type"),
+                        rs.getString("status")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to load users: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public static void setUserStatus(int id, String status) {
+        String sql = "UPDATE users SET status = ? WHERE id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to update status: " + e.getMessage());
+        }
+    }
+
+    public static void deleteUser(int id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to delete user: " + e.getMessage());
+        }
+    }
+
+    public static boolean usernameExists(String username) {
+        String sql = "SELECT 1 FROM users WHERE username = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            return ps.executeQuery().next();
+        } catch (SQLException e) {
+            System.out.println("Failed to check username: " + e.getMessage());
+            return false;
         }
     }
 
@@ -513,6 +568,43 @@ public class DatabaseManager {
             if (rs.next()) return rs.getDouble("credit_limit");
         } catch (SQLException e) { e.printStackTrace(); }
         return 0;
+    }
+
+    public static String getDiscountPlan(String username) {
+        String sql = "SELECT discount_plan FROM users WHERE username = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            var rs = ps.executeQuery();
+            if (rs.next()) return rs.getString("discount_plan");
+        } catch (SQLException e) { e.printStackTrace(); }
+        return "fixed";
+    }
+
+    public static void updateCreditLimit(int id, float limit) {
+        String sql = "UPDATE users SET credit_limit = ? WHERE id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setFloat(1, limit);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    public static void updateDiscountPlan(int id, String plan) {
+        String sql = "UPDATE users SET discount_plan = ? WHERE id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, plan);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    public static void updateUserType(int id, String type){
+        String sql = "UPDATE users SET type = ? WHERE id = ?";
+        try (var ps = conn.prepareStatement(sql)){
+            ps.setString(1, type);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
     }
 
     public static double getOutstandingBalance(String merchantId) {
