@@ -23,7 +23,7 @@
             </font>
             <graphic>
                 <ImageView fx:id="userIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@icons/user.png"/>
+                    <Image url="icons/user.png"/>
                 </ImageView>
             </graphic>
         </Label>
