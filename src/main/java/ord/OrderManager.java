@@ -3,12 +3,10 @@ package ord;
 import cat.CatalogueItem;
 import db.DatabaseManager;
 import ipos.sa.SceneSwitcher;
+import ipos.sa.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.util.List;
 
@@ -186,6 +184,18 @@ public class OrderManager {
                         || String.valueOf(item.getPackageCost()).contains(l)
                 ) {catalogue.getItems().add(item);}
             }
+        }
+    }
+
+    public void handleLogout(ActionEvent event) {
+        // confirm logout
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to logout?", ButtonType.YES, ButtonType.NO);
+        confirm.showAndWait();
+
+        // if user confirms, logout UserSession and return to login screen
+        if (confirm.getResult() == ButtonType.YES) {
+            UserSession.logout();
+            SceneSwitcher.switchScene(event, "/ipos/sa/login-window.fxml", "Login");
         }
     }
 }
