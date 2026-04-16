@@ -90,13 +90,14 @@
                     </padding>
                     <TableView fx:id="pendingTable" VBox.vgrow="ALWAYS">
                         <columns>
+                            <TableColumn fx:id="colAppId" prefWidth="50" text="ID" />
                             <TableColumn fx:id="colCompany" prefWidth="200.0" text="Company Name"/>
                             <TableColumn fx:id="colReg" prefWidth="150.0" text="Reg No"/>
                             <TableColumn fx:id="colEmail" prefWidth="250.0" text="Email"/>
                         </columns>
                     </TableView>
                     <HBox alignment="CENTER_RIGHT" spacing="10">
-                        <Button onAction="#handleReviewApp" prefHeight="30.0" text="Review &amp; Approve Selected"/>
+                        <Button onAction="#handleReviewApp" prefHeight="30.0" text="Review Application"/>
                     </HBox>
                 </VBox>
             </Tab>

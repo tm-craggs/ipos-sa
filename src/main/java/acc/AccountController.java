@@ -1,16 +1,21 @@
 package acc;
 
+import api.model.CommercialApplication;
 import db.DatabaseManager;
 import ipos.sa.UserSession;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import ipos.sa.SceneSwitcher;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 public class AccountController {
@@ -22,8 +27,10 @@ public class AccountController {
     @FXML private RadioButton fixedRadio, flexibleRadio;
     @FXML private Button saveButton;
 
-    @FXML private TableView<Object> pendingTable;
-    @FXML private TableColumn<Object, String> colCompany, colReg, colEmail;
+    @FXML private TableView<CommercialApplication> pendingTable;
+    @FXML private TableColumn<CommercialApplication, Integer> colAppId;
+    @FXML private TableColumn<CommercialApplication, String> colCompany, colReg, colEmail;
+
 
     @FXML private TableView<UserAccount> accountsTable;
     @FXML private TableColumn<UserAccount, Integer> colId;
@@ -34,12 +41,7 @@ public class AccountController {
 
         String callerRole = UserSession.getInstance().getType();
 
-        List<String> roles = switch (callerRole) {
-            case "Director", "Admin" -> List.of("Merchant", "Manager", "Admin");
-            case "Manager"  -> List.of("Merchant", "Manager");
-            default         -> List.of();
-        };
-        roleChoice.setItems(FXCollections.observableArrayList(roles));
+        getRoles(callerRole, roleChoice);
         roleChoice.setValue("Merchant");
 
         merchantFields.visibleProperty().bind(roleChoice.valueProperty().isEqualTo("Merchant"));
@@ -60,6 +62,23 @@ public class AccountController {
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         loadAccountsTable();
+
+        // Set up Pending Table columns
+        colAppId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colCompany.setCellValueFactory(new PropertyValueFactory<>("company_name"));
+        colReg.setCellValueFactory(new PropertyValueFactory<>("reg_num"));
+        colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+
+        loadPendingTable();
+    }
+
+    private void getRoles(String callerRole, ChoiceBox<String> roleChoice) {
+        List<String> roles = switch (callerRole) {
+            case "Director", "Admin" -> List.of("Merchant", "Manager", "Admin");
+            case "Manager"  -> List.of("Merchant", "Manager");
+            default         -> List.of();
+        };
+        roleChoice.setItems(FXCollections.observableArrayList(roles));
     }
 
     private void loadAccountsTable() {
@@ -68,6 +87,10 @@ public class AccountController {
                 DatabaseManager.getUsers(callerRole)
         );
         accountsTable.setItems(data);
+    }
+
+    private void loadPendingTable() {
+        pendingTable.setItems(FXCollections.observableArrayList(DatabaseManager.getApplications()));
     }
 
     /**
@@ -122,12 +145,7 @@ public class AccountController {
 
         ChoiceBox<String> roleBox = new ChoiceBox<>();
         roleBox.setValue(selected.getType());
-        List<String> roleOptions = switch (callerRole) {
-            case "Director", "Admin" -> List.of("Merchant", "Manager", "Admin");
-            case "Manager"  -> List.of("Merchant", "Manager");
-            default         -> List.of();
-        };
-        roleBox.setItems(FXCollections.observableArrayList(roleOptions));
+        getRoles(callerRole, roleBox);
         grid.add(new Label("Role:"), 0, row);
         grid.add(roleBox, 1, row++);
 
@@ -339,7 +357,44 @@ public class AccountController {
 
     @FXML
     private void handleReviewApp() {
-        System.out.println("Reviewing selected application...");
+        CommercialApplication selected = pendingTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showWarning("No selection", "Please select an application to review.");
+            return;
+        }
+
+        Alert reviewDialog = getAlert(selected);
+
+        // Layout the buttons: Cancel on Left, Reject/Approve on Right
+        ButtonType btnApprove = new ButtonType("Approve", ButtonBar.ButtonData.OK_DONE);
+        ButtonType btnReject = new ButtonType("Reject", ButtonBar.ButtonData.OTHER);
+        ButtonType btnCancel = new ButtonType("Cancel", ButtonBar.ButtonData.LEFT);
+
+        reviewDialog.getButtonTypes().setAll(btnCancel, btnReject, btnApprove);
+
+        reviewDialog.showAndWait().ifPresent(response -> {
+            if (response == btnApprove) {
+                openApprovalDialog(selected); // Launch the setup window
+            } else if (response == btnReject) {
+                DatabaseManager.deleteApplication(selected.getId());
+                loadPendingTable();
+            }
+        });
+    }
+
+    @NotNull
+    private static Alert getAlert(CommercialApplication selected) {
+        Alert reviewDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        reviewDialog.setTitle("Application Review");
+        reviewDialog.setHeaderText("Details for " + selected.getCompany_name());
+        reviewDialog.setContentText(
+                "Reg No: " + selected.getReg_num() + "\n" +
+                        "Email: " + selected.getEmail() + "\n" +
+                        "Phone: " + selected.getPhone() + "\n" +
+                        "Address: " + selected.getAddress() + "\n" +
+                        "Director: " + selected.getDirector()
+        );
+        return reviewDialog;
     }
 
     private void showWarning(String title, String message) {
@@ -349,4 +404,68 @@ public class AccountController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    private void openApprovalDialog(CommercialApplication app) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Approve Merchant Account");
+        dialog.setHeaderText("Setting up account for: " + app.getCompany_name());
+
+        ButtonType approveBtn = new ButtonType("Create Account", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(approveBtn, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10); grid.setVgap(12);
+        grid.setPadding(new Insets(20));
+
+        TextField userFld = new TextField(app.getEmail());
+        PasswordField passFld = new PasswordField();
+
+        // Merchant Settings
+        TextField limFld = new TextField(); // Default limit
+        RadioButton fixed = new RadioButton("Fixed");
+        RadioButton flex = new RadioButton("Flexible");
+        ToggleGroup group = new ToggleGroup();
+        fixed.setToggleGroup(group); flex.setToggleGroup(group);
+        fixed.setSelected(true);
+
+        grid.add(new Label("Username:"), 0, 0);
+        grid.add(userFld, 1, 0);
+        grid.add(new Label("Password:"), 0, 1);
+        grid.add(passFld, 1, 1);
+        grid.add(new Label("Credit Limit (£):"), 0, 2);
+        grid.add(limFld, 1, 2);
+        grid.add(new Label("Discount Plan:"), 0, 3);
+        grid.add(new HBox(15, fixed, flex), 1, 3);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.getDialogPane().lookupButton(approveBtn).disableProperty().bind(
+                passFld.textProperty().isEmpty().or(userFld.textProperty().isEmpty()).or(limFld.textProperty().isEmpty())
+        );
+
+        dialog.showAndWait().ifPresent(response -> {
+            if (response == approveBtn) {
+                try {
+                    float limit = Float.parseFloat(limFld.getText());
+                    String plan = flex.isSelected() ? "flexible" : "fixed";
+
+                    if (!DatabaseManager.usernameExists(userFld.getText())) {
+                        DatabaseManager.addUser(userFld.getText(), passFld.getText(), "Merchant", limit, plan);
+                        DatabaseManager.deleteApplication(app.getId());
+                        loadPendingTable();
+                        loadAccountsTable();
+                        Alert success = new Alert(Alert.AlertType.INFORMATION, "Merchant account created successfully!");
+                        success.show();
+                    } else {
+                        showWarning("Error", "Username is already taken.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    showWarning("Invalid Input", "Please enter a valid number for the credit limit.");
+                }
+            }
+        });
+    }
+
+
 }

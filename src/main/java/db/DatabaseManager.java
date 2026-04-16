@@ -707,18 +707,52 @@ public class DatabaseManager {
     public static boolean saveApplication(CommercialApplication application) {
         String sql = "INSERT INTO commercial_applications (company_name, reg_num, email, phone, address, director) VALUES (?, ?, ?, ?, ?, ?)";
         try (var pstmt = conn.prepareStatement(sql)){
-            pstmt.setString(1, application.company_name);
-            pstmt.setInt(2, application.reg_num);
-            pstmt.setString(3, application.email);
-            pstmt.setString(4, application.phone);
-            pstmt.setString(5, application.address);
-            pstmt.setString(6, application.director);
+            pstmt.setString(1, application.getCompany_name());
+            pstmt.setInt(2, application.getReg_num());
+            pstmt.setString(3, application.getEmail());
+            pstmt.setString(4, application.getPhone());
+            pstmt.setString(5, application.getAddress());
+            pstmt.setString(6, application.getDirector());
 
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e){
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public static List<CommercialApplication> getApplications() {
+        List<CommercialApplication> apps = new ArrayList<>();
+        String sql = "SELECT * FROM commercial_applications";
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                apps.add(new CommercialApplication(
+                        rs.getInt("application_id"),
+                        rs.getString("company_name"),
+                        rs.getInt("reg_num"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("address"),
+                        rs.getString("director")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return apps;
+    }
+
+    public static void deleteApplication(int id) {
+        String sql = "DELETE FROM commercial_applications WHERE application_id = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
