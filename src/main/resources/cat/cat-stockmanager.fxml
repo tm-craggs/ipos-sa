@@ -52,7 +52,7 @@
                 <TableColumn fx:id="colId" prefWidth="71.0" text="ID">
                     <cellValueFactory><PropertyValueFactory property="itemId" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="colDesc" prefWidth="79.0" text="Desc.">
+                <TableColumn fx:id="colDesc" prefWidth="180.0" text="Description">
                     <cellValueFactory><PropertyValueFactory property="description" /></cellValueFactory>
                 </TableColumn>
                 <TableColumn fx:id="colPackageType" prefWidth="103.0" text="Package Type">
@@ -70,10 +70,10 @@
                 <TableColumn fx:id="colAvailability" prefWidth="138.0" text="Availability">
                     <cellValueFactory><PropertyValueFactory property="availability" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="colStockLimit" prefWidth="142.0" text="Stock Limit">
+                <TableColumn fx:id="colStockLimit" prefWidth="80.0" text="Stock Limit">
                     <cellValueFactory><PropertyValueFactory property="stockLimit" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="colStatus" prefWidth="152.0" text="Status">
+                <TableColumn fx:id="colStatus" prefWidth="80.0" text="Status">
                     <cellValueFactory><PropertyValueFactory property="status" /></cellValueFactory>
                 </TableColumn>
             </columns>
