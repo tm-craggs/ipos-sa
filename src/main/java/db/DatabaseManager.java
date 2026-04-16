@@ -31,6 +31,7 @@ public class DatabaseManager {
      * This is the init function. This function is called once the connection has been established. It will check
      * that the users database has been created, and will create it if not. It also makes sure the director account is
      * created.
+     *
      * @throws SQLException
      */
     private static void init() throws SQLException {
@@ -40,82 +41,82 @@ public class DatabaseManager {
 
             // create user table for ipos-sa-acc
             st.execute("""
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL,
-                    type TEXT NULL,
-                    credit_limit REAL,
-                    discount_plan TEXT,
-                    status TEXT
-                );
-            """);
+                        CREATE TABLE IF NOT EXISTS users (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            username TEXT UNIQUE NOT NULL,
+                            password TEXT NOT NULL,
+                            type TEXT NULL,
+                            credit_limit REAL,
+                            discount_plan TEXT,
+                            status TEXT
+                        );
+                    """);
 
             // seed first user into users database
             st.execute("""
-                INSERT OR IGNORE INTO users (username, password, type)
-                VALUES ('director', 'director', 'Director')
-            """);
+                        INSERT OR IGNORE INTO users (username, password, type)
+                        VALUES ('director', 'director', 'Director')
+                    """);
 
             // adding a database for table for ipos-sa-cat
             st.execute("""
-                CREATE TABLE IF NOT EXISTS catalogue (
-                    item_id INTEGER PRIMARY KEY,
-                    description TEXT NOT NULL,
-                    package_type TEXT,
-                    unit TEXT,
-                    units_per_pack INTEGER,
-                    package_cost REAL,
-                    availability INTEGER,
-                    stock_limit INTEGER,
-                    status TEXT,
-                    order_percentage DOUBLE
-                );
-            """);
+                        CREATE TABLE IF NOT EXISTS catalogue (
+                            item_id INTEGER PRIMARY KEY,
+                            description TEXT NOT NULL,
+                            package_type TEXT,
+                            unit TEXT,
+                            units_per_pack INTEGER,
+                            package_cost REAL,
+                            availability INTEGER,
+                            stock_limit INTEGER,
+                            status TEXT,
+                            order_percentage DOUBLE
+                        );
+                    """);
 
             // adding database tables for ipos-sa-rpt
             st.execute("""
-                CREATE TABLE IF NOT EXISTS invoices (
-                    invoice_id TEXT PRIMARY KEY,
-                    merchant_id TEXT NOT NULL,
-                    amount REAL NOT NULL,
-                    invoice_date TEXT NOT NULL,
-                    payment_status TEXT
-                );
-            """);
+                        CREATE TABLE IF NOT EXISTS invoices (
+                            invoice_id TEXT PRIMARY KEY,
+                            merchant_id TEXT NOT NULL,
+                            amount REAL NOT NULL,
+                            invoice_date TEXT NOT NULL,
+                            payment_status TEXT
+                        );
+                    """);
 
             st.execute("""
-                CREATE TABLE IF NOT EXISTS orders (
-                    order_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    merchant_id TEXT NOT NULL,
-                    order_date TEXT NOT NULL,
-                    order_value REAL NOT NULL,
-                    dispatch_date TEXT,
-                    delivered_date TEXT,
-                    payment_status TEXT,
-                    delivery_status TEXT
-                );
-            """);
+                        CREATE TABLE IF NOT EXISTS orders (
+                            order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            merchant_id TEXT NOT NULL,
+                            order_date TEXT NOT NULL,
+                            order_value REAL NOT NULL,
+                            dispatch_date TEXT,
+                            delivered_date TEXT,
+                            payment_status TEXT,
+                            delivery_status TEXT
+                        );
+                    """);
 
             st.execute("""
-                CREATE TABLE IF NOT EXISTS stock_movements (
-                    movement_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    item_id TEXT NOT NULL,
-                    movement_type TEXT NOT NULL,
-                    quantity INTEGER NOT NULL,
-                    movement_date TEXT NOT NULL
-                );
-            """);
+                        CREATE TABLE IF NOT EXISTS stock_movements (
+                            movement_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            item_id TEXT NOT NULL,
+                            movement_type TEXT NOT NULL,
+                            quantity INTEGER NOT NULL,
+                            movement_date TEXT NOT NULL
+                        );
+                    """);
             st.execute("""
-    CREATE TABLE IF NOT EXISTS order_items (
-        order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        order_id TEXT NOT NULL,
-        item_id INTEGER NOT NULL,
-        quantity INTEGER NOT NULL,
-        unit_cost REAL NOT NULL,
-        amount REAL NOT NULL
-    );
-""");
+                        CREATE TABLE IF NOT EXISTS order_items (
+                            order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            order_id TEXT NOT NULL,
+                            item_id INTEGER NOT NULL,
+                            quantity INTEGER NOT NULL,
+                            unit_cost REAL NOT NULL,
+                            amount REAL NOT NULL
+                        );
+                    """);
         }
     }
 
@@ -130,6 +131,7 @@ public class DatabaseManager {
             return null;
         }
     }
+
     public static void addUser(String username, String password, String type) {
         String sql = "INSERT INTO users (username, password, type) VALUES (?, ?, ?)";
         try (var pstmt = conn.prepareStatement(sql)) {
@@ -163,15 +165,15 @@ public class DatabaseManager {
         List<UserAccount> list = new ArrayList<>();
         String sql = switch (callerRole) {
             case "Director" -> "SELECT id, username, type, status FROM users WHERE username != 'director'";
-            case "Admin"    -> "SELECT id, username, type, status FROM users WHERE type IN ('Manager', 'Merchant')";
-            case "Manager"  -> "SELECT id, username, type, status FROM users WHERE type = 'Merchant'";
-            default         -> null;
+            case "Admin" -> "SELECT id, username, type, status FROM users WHERE type IN ('Manager', 'Merchant')";
+            case "Manager" -> "SELECT id, username, type, status FROM users WHERE type = 'Merchant'";
+            default -> null;
         };
 
         if (sql == null) return list; // Merchants and unknowns get nothing
 
         try (var stmt = conn.createStatement();
-             var rs   = stmt.executeQuery(sql)) {
+             var rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 list.add(new UserAccount(
                         rs.getInt("id"),
@@ -263,12 +265,12 @@ public class DatabaseManager {
     }
 
 
-    public static void addCatalogueItem(int itemId,String Description, String packageType, String unit, int unitsperPack, double packageCost,int availability, int stockLimit, double orderPercentage) {
+    public static void addCatalogueItem(int itemId, String Description, String packageType, String unit, int unitsperPack, double packageCost, int availability, int stockLimit, double orderPercentage) {
         String statusValue = availability < stockLimit ? "Low stock" : "OK";
-        String sql ="""
-            INSERT INTO catalogue (item_id, description, package_type, unit, units_per_pack, package_cost, availability, stock_limit, status, order_percentage)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+        String sql = """
+                    INSERT INTO catalogue (item_id, description, package_type, unit, units_per_pack, package_cost, availability, stock_limit, status, order_percentage)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
         try (var pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, itemId);
             pstmt.setString(2, Description);
@@ -288,8 +290,8 @@ public class DatabaseManager {
 
     private static void updateStatus(int id) {
         String sql = """
-            UPDATE catalogue SET status = CASE WHEN availability < stock_limit THEN 'Low stock' ELSE 'OK' END WHERE item_id = ?
-            """;
+                UPDATE catalogue SET status = CASE WHEN availability < stock_limit THEN 'Low stock' ELSE 'OK' END WHERE item_id = ?
+                """;
         try (var pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
@@ -297,109 +299,118 @@ public class DatabaseManager {
             System.out.println("Failed to update status: " + e.getMessage());
         }
     }
+
     public static void updateDescription(int id, String description) {
         String sql = """
                 UPDATE catalogue SET description = ? WHERE item_id = ?
                 """;
         try (var pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1,description);
-            pstmt.setInt(2,id);
+            pstmt.setString(1, description);
+            pstmt.setInt(2, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Failed to update description: " + e.getMessage());
         }
     }
+
     public static void updatePackageType(int id, String packageType) {
         String sql = """ 
-               UPDATE catalogue SET package_type = ? WHERE item_id = ?
+                UPDATE catalogue SET package_type = ? WHERE item_id = ?
                 """;
         try (var pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1,packageType);
-            pstmt.setInt(2,id);
+            pstmt.setString(1, packageType);
+            pstmt.setInt(2, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Failed to update description: " + e.getMessage());
         }
     }
+
     public static void updateUnit(int id, String unit) {
         String sql = """ 
-               UPDATE catalogue SET unit = ? WHERE item_id = ?
+                UPDATE catalogue SET unit = ? WHERE item_id = ?
                 """;
         try (var pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1,unit);
-            pstmt.setInt(2,id);
+            pstmt.setString(1, unit);
+            pstmt.setInt(2, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Failed to update description: " + e.getMessage());
         }
     }
+
     public static void updateUnitsPerPack(int id, int unitsPerPack) {
         String sql = """ 
-               UPDATE catalogue SET units_per_pack = ? WHERE item_id = ?
+                UPDATE catalogue SET units_per_pack = ? WHERE item_id = ?
                 """;
         try (var pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1,unitsPerPack);
-            pstmt.setInt(2,id);
+            pstmt.setInt(1, unitsPerPack);
+            pstmt.setInt(2, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Failed to update description: " + e.getMessage());
         }
     }
+
     public static void updatePackageCost(int id, double packageCost) {
         String sql = """ 
-               UPDATE catalogue SET package_cost = ? WHERE item_id = ?
+                UPDATE catalogue SET package_cost = ? WHERE item_id = ?
                 """;
         try (var pstmt = conn.prepareStatement(sql)) {
-            pstmt.setDouble(1,packageCost);
-            pstmt.setInt(2,id);
+            pstmt.setDouble(1, packageCost);
+            pstmt.setInt(2, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Failed to update description: " + e.getMessage());
         }
     }
+
     public static void updateAvailability(int id, int availability) {
         String sql = """ 
-               UPDATE catalogue SET availability = ? WHERE item_id = ?
+                UPDATE catalogue SET availability = ? WHERE item_id = ?
                 """;
         try (var pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1,availability);
-            pstmt.setInt(2,id);
+            pstmt.setInt(1, availability);
+            pstmt.setInt(2, id);
             pstmt.executeUpdate();
             updateStatus(id);
         } catch (SQLException e) {
             System.out.println("Failed to update description: " + e.getMessage());
         }
     }
+
     public static void updateStockLimit(int id, int stockLimit) {
         String sql = """ 
-               UPDATE catalogue SET stock_limit = ? WHERE item_id = ?
+                UPDATE catalogue SET stock_limit = ? WHERE item_id = ?
                 """;
         try (var pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1,stockLimit);
-            pstmt.setInt(2,id);
+            pstmt.setInt(1, stockLimit);
+            pstmt.setInt(2, id);
             pstmt.executeUpdate();
             updateStatus(id);
         } catch (SQLException e) {
             System.out.println("Failed to update description: " + e.getMessage());
         }
     }
-    public static void deleteCatalogueItem(int id){
+
+    public static void deleteCatalogueItem(int id) {
         String sql = """
                 DELETE FROM catalogue WHERE item_id = ?""";
-        try (var pstmt = conn.prepareStatement(sql)){
-            pstmt.setInt(1,id);
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Failed to delete item: " + e.getMessage());
         }
     }
+
     public static void updateOrderPerentage(int id, double OP) {
         String sql = """ 
-               UPDATE catalogue SET order_percentage = ? WHERE item_id = ?
+                UPDATE catalogue SET order_percentage = ? WHERE item_id = ?
                 """;
         try (var pstmt = conn.prepareStatement(sql)) {
             pstmt.setDouble(1, OP);
-            pstmt.setInt(2,id);
+            pstmt.setInt(2, id);
             pstmt.executeUpdate();
             updateStatus(id);
         } catch (SQLException e) {
@@ -572,7 +583,9 @@ public class DatabaseManager {
             ps.setString(1, username);
             var rs = ps.executeQuery();
             if (rs.next()) return rs.getDouble("credit_limit");
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 
@@ -582,7 +595,9 @@ public class DatabaseManager {
             ps.setString(1, username);
             var rs = ps.executeQuery();
             if (rs.next()) return rs.getString("discount_plan");
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return "fixed";
     }
 
@@ -592,7 +607,9 @@ public class DatabaseManager {
             ps.setFloat(1, limit);
             ps.setInt(2, id);
             ps.executeUpdate();
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void updateDiscountPlan(int id, String plan) {
@@ -601,16 +618,20 @@ public class DatabaseManager {
             ps.setString(1, plan);
             ps.setInt(2, id);
             ps.executeUpdate();
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void updateUserType(int id, String type){
+    public static void updateUserType(int id, String type) {
         String sql = "UPDATE users SET type = ? WHERE id = ?";
-        try (var ps = conn.prepareStatement(sql)){
+        try (var ps = conn.prepareStatement(sql)) {
             ps.setString(1, type);
             ps.setInt(2, id);
             ps.executeUpdate();
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static double getOutstandingBalance(String merchantId) {
@@ -619,7 +640,9 @@ public class DatabaseManager {
             ps.setString(1, merchantId);
             var rs = ps.executeQuery();
             if (rs.next()) return rs.getDouble("total");
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 
