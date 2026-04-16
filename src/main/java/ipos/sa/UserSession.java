@@ -17,7 +17,6 @@ public class UserSession {
     public static void login(String username, String type) {
         if (instance == null) {
             instance = new UserSession(username, type);
-            System.out.println("Login successful!");
             System.out.println("Logged in as: " + username);
             System.out.println("Account type: " + type);
         } else {
@@ -29,6 +28,7 @@ public class UserSession {
 
     public static void logout() {
 
+        System.out.println("Logging out...");
         instance = null;
     }
 

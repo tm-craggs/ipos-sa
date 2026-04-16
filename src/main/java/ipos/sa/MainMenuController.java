@@ -33,7 +33,6 @@ public class MainMenuController {
         if (type == null) return;
         type = type.toLowerCase();
 
-        System.out.println(type);
 
         switch (type) {
 
