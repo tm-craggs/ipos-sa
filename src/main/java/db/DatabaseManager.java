@@ -161,9 +161,15 @@ public class DatabaseManager {
 
     public static List<UserAccount> getUsers(String callerRole) {
         List<UserAccount> list = new ArrayList<>();
-        String sql = callerRole.equals("Director")
-                ? "SELECT id, username, type, status FROM users WHERE username != 'director'"
-                : "SELECT id, username, type, status FROM users WHERE type IN ('Manager', 'Merchant')";
+        String sql = switch (callerRole) {
+            case "Director" -> "SELECT id, username, type, status FROM users WHERE username != 'director'";
+            case "Admin"    -> "SELECT id, username, type, status FROM users WHERE type IN ('Manager', 'Merchant')";
+            case "Manager"  -> "SELECT id, username, type, status FROM users WHERE type = 'Merchant'";
+            default         -> null;
+        };
+
+        if (sql == null) return list; // Merchants and unknowns get nothing
+
         try (var stmt = conn.createStatement();
              var rs   = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -649,4 +655,17 @@ public class DatabaseManager {
     public static void main(String[] args) {
         connect();
     }
+
+    public static void clearMerchantFields(int id) {
+
+        String sql = "UPDATE users SET credit_limit = NULL, discount_plan = NULL, status = NULL WHERE id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to clear merchant fields: " + e.getMessage());
+        }
+
+    }
+
 }

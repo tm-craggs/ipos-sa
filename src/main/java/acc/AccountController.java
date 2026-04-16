@@ -27,15 +27,18 @@ public class AccountController {
 
     @FXML private TableView<UserAccount> accountsTable;
     @FXML private TableColumn<UserAccount, Integer> colId;
-    @FXML private TableColumn<UserAccount, String>  colUser, colType, colStatus;
+    @FXML private TableColumn<UserAccount, String> colUser, colType, colStatus;
 
     @FXML
     public void initialize() {
 
         String callerRole = UserSession.getInstance().getType();
-        List<String> roles = callerRole.equals("Director")
-                ? List.of("Merchant", "Manager", "Admin")
-                : List.of("Merchant", "Manager");
+
+        List<String> roles = switch (callerRole) {
+            case "Director", "Admin" -> List.of("Merchant", "Manager", "Admin");
+            case "Manager"  -> List.of("Merchant", "Manager");
+            default         -> List.of();
+        };
         roleChoice.setItems(FXCollections.observableArrayList(roles));
         roleChoice.setValue("Merchant");
 
@@ -67,15 +70,21 @@ public class AccountController {
         accountsTable.setItems(data);
     }
 
-
     /**
-     * Here is a quick overview of what permissions each role has:
-     * Merchant: Cannot access this subsystem
-     * Manager: Can perform CRUD operations on merchant accounts apart from restoring an account from in-default
-     * cannot see other managers, admins, or director.
-     * Admin: Same permissions as manager, but can see and perform CRUD operations on manager accounts.
-     * Director: Can see and perform CRUD operations on all accounts and can restore merchants from in-default.
+     * Returns a numeric rank for a given role, used to enforce the permission hierarchy.
+     * Higher number = higher rank.
      */
+    private int getRank(String role) {
+        return switch (role) {
+            case "Merchant" -> 0;
+            case "Manager"  -> 1;
+            case "Admin"    -> 2;
+            case "Director" -> 3;
+            default         -> -1;
+        };
+    }
+
+
     @FXML
     private void handleEditAccount() {
         UserAccount selected = accountsTable.getSelectionModel().getSelectedItem();
@@ -86,6 +95,17 @@ public class AccountController {
 
         String callerRole = UserSession.getInstance().getType();
         boolean isMerchant = selected.getType().equals("Merchant");
+        boolean isDirector = callerRole.equals("Director");
+
+        if (getRank(callerRole) <= getRank(selected.getType())) {
+            showWarning("Permission Denied", "You can only edit accounts below your role level.");
+            return;
+        }
+
+        if (selected.getStatus() != null && selected.getStatus().equals("In-Default") && !isDirector) {
+            showWarning("Account In Default", "This account is in default and can only be modified by the Director.");
+            return;
+        }
 
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Edit Account");
@@ -101,74 +121,136 @@ public class AccountController {
         int row = 0;
 
         ChoiceBox<String> roleBox = new ChoiceBox<>();
-        if (callerRole.equals("Director")) {
-            roleBox.setItems(FXCollections.observableArrayList("Merchant", "Manager", "Admin"));
-        } else if (callerRole.equals("Admin")) {
-            roleBox.setItems(FXCollections.observableArrayList("Merchant", "Manager"));
-        }
-        if (!callerRole.equals("Manager")) {
-            roleBox.setValue(selected.getType());
-            grid.add(new Label("Role:"), 0, row);
-            grid.add(roleBox, 1, row++);
-        }
+        roleBox.setValue(selected.getType());
+        List<String> roleOptions = switch (callerRole) {
+            case "Director", "Admin" -> List.of("Merchant", "Manager", "Admin");
+            case "Manager"  -> List.of("Merchant", "Manager");
+            default         -> List.of();
+        };
+        roleBox.setItems(FXCollections.observableArrayList(roleOptions));
+        grid.add(new Label("Role:"), 0, row);
+        grid.add(roleBox, 1, row++);
 
+        Label statusLabel = new Label("Status:");
         ChoiceBox<String> statusBox = new ChoiceBox<>();
-        if (callerRole.equals("Director")) {
-            statusBox.setItems(FXCollections.observableArrayList("Normal", "Suspended", "Default"));
-        } else {
-            if (selected.getStatus().equals("Default")) {
+        if (selected.getStatus() != null && selected.getStatus().equals("Default")) {
+            if (isDirector) {
+                statusBox.setItems(FXCollections.observableArrayList("Normal", "Suspended", "In-Default"));
+            } else {
                 statusBox.setItems(FXCollections.observableArrayList("Default"));
                 statusBox.setDisable(true);
-            } else if (callerRole.equals("Manager")) {
-                statusBox.setItems(FXCollections.observableArrayList("Normal", "Suspended", "Default"));
-            } else {
-                statusBox.setItems(FXCollections.observableArrayList("Normal", "Suspended"));
             }
+        } else {
+            statusBox.setItems(FXCollections.observableArrayList("Normal", "Suspended", "In-Default"));
         }
-        statusBox.setValue(selected.getStatus());
-        grid.add(new Label("Status:"), 0, row);
+        statusBox.setValue(selected.getStatus() != null ? selected.getStatus() : "Normal");
+        grid.add(statusLabel, 0, row);
         grid.add(statusBox, 1, row++);
 
-        TextField limitField = new TextField();
-        ChoiceBox<String> planBox = new ChoiceBox<>();
-
+        Label limitLabel = new Label("Credit Limit (£):");
+        TextField merchantLimitField = new TextField();
         if (isMerchant) {
             double currentLimit = DatabaseManager.getCreditLimit(selected.getUsername());
-            String currentPlan  = DatabaseManager.getDiscountPlan(selected.getUsername());
-
-            limitField.setText(String.valueOf(currentLimit));
-            grid.add(new Label("Credit Limit (£):"), 0, row);
-            grid.add(limitField, 1, row++);
-
-            planBox.setItems(FXCollections.observableArrayList("fixed", "flexible"));
-            planBox.setValue(currentPlan);
-            grid.add(new Label("Discount Plan:"), 0, row);
-            grid.add(planBox, 1, row++);
+            merchantLimitField.setText(String.valueOf(currentLimit));
         }
+        grid.add(limitLabel, 0, row);
+        grid.add(merchantLimitField, 1, row++);
+
+        dialog.getDialogPane().lookupButton(confirmButton).disableProperty().bind(
+                roleBox.valueProperty().isEqualTo("Merchant")
+                        .and(merchantLimitField.textProperty().isEmpty())
+        );
+
+        Label planLabel = new Label("Discount Plan:");
+        RadioButton fixedOption    = new RadioButton("Fixed");
+        RadioButton flexibleOption = new RadioButton("Flexible");
+        ToggleGroup planGroup      = new ToggleGroup();
+        fixedOption.setToggleGroup(planGroup);
+        flexibleOption.setToggleGroup(planGroup);
+        javafx.scene.layout.HBox planBox = new javafx.scene.layout.HBox(15, fixedOption, flexibleOption);
+
+        if (isMerchant) {
+            String currentPlan = DatabaseManager.getDiscountPlan(selected.getUsername());
+            if ("flexible".equals(currentPlan)) {
+                flexibleOption.setSelected(true);
+            } else {
+                fixedOption.setSelected(true);
+            }
+        } else {
+            fixedOption.setSelected(true);
+        }
+        grid.add(planLabel, 0, row);
+        grid.add(planBox, 1, row++);
+
+        if (selected.getStatus() != null && selected.getStatus().equals("In-Default")) {
+            roleBox.setDisable(true);
+            merchantLimitField.setDisable(true);
+            fixedOption.setDisable(true);
+            flexibleOption.setDisable(true);
+        }
+
+        Runnable updateMerchantFieldVisibility = () -> {
+            boolean showMerchantFields = roleBox.getValue().equals("Merchant");
+
+            statusLabel.setVisible(showMerchantFields);
+            statusLabel.setManaged(showMerchantFields);
+            statusBox.setVisible(showMerchantFields);
+            statusBox.setManaged(showMerchantFields);
+
+            limitLabel.setVisible(showMerchantFields);
+            limitLabel.setManaged(showMerchantFields);
+            merchantLimitField.setVisible(showMerchantFields);
+            merchantLimitField.setManaged(showMerchantFields);
+
+            planLabel.setVisible(showMerchantFields);
+            planLabel.setManaged(showMerchantFields);
+            planBox.setVisible(showMerchantFields);
+            planBox.setManaged(showMerchantFields);
+
+            dialog.getDialogPane().getScene().getWindow().sizeToScene();
+        };
+
+        updateMerchantFieldVisibility.run();
+
+        roleBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.equals("Merchant") && !oldVal.equals("Merchant")) {
+                statusBox.setValue("Normal");
+                merchantLimitField.clear();
+                fixedOption.setSelected(true);
+            }
+            updateMerchantFieldVisibility.run();
+        });
 
         dialog.getDialogPane().setContent(grid);
 
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType == confirmButton) {
 
-                if (!callerRole.equals("Manager") && roleBox.getValue() != null) {
-                    if (!roleBox.getValue().equals(selected.getType())) {
-                        DatabaseManager.updateUserType(selected.getId(), roleBox.getValue());
+                boolean selectedAsMerchant = roleBox.getValue().equals("Merchant");
+
+                // Apply role change if it has changed
+                if (!roleBox.getValue().equals(selected.getType())) {
+                    DatabaseManager.updateUserType(selected.getId(), roleBox.getValue());
+
+                    // If promoted away from Merchant, clear merchant-specific fields and stop
+                    if (isMerchant && !selectedAsMerchant) {
+                        DatabaseManager.clearMerchantFields(selected.getId());
+                        loadAccountsTable();
+                        return;
                     }
-
-
-                    DatabaseManager.setUserStatus(selected.getId(), statusBox.getValue());
                 }
 
-                if (isMerchant) {
+                if (selectedAsMerchant) {
+                    DatabaseManager.setUserStatus(selected.getId(), statusBox.getValue());
                     try {
-                        float newLimit = Float.parseFloat(limitField.getText().trim());
+                        float newLimit = Float.parseFloat(merchantLimitField.getText().trim());
                         DatabaseManager.updateCreditLimit(selected.getId(), newLimit);
                     } catch (NumberFormatException e) {
                         showWarning("Invalid Input", "Credit limit must be a number.");
                         return;
                     }
-                    DatabaseManager.updateDiscountPlan(selected.getId(), planBox.getValue());
+                    String chosenPlan = flexibleOption.isSelected() ? "flexible" : "fixed";
+                    DatabaseManager.updateDiscountPlan(selected.getId(), chosenPlan);
                 }
 
                 loadAccountsTable();
@@ -184,8 +266,10 @@ public class AccountController {
             return;
         }
 
-        if (!UserSession.getInstance().getType().equals("Director") && selected.getType().equals("Admin")) {
-            showWarning("Permission denied", "Only the Director can delete Admin accounts.");
+        String callerRole = UserSession.getInstance().getType();
+
+        if (getRank(callerRole) <= getRank(selected.getType())) {
+            showWarning("Permission Denied", "You can only delete accounts below your role level.");
             return;
         }
 
