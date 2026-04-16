@@ -1,6 +1,7 @@
 package db;
 
 import acc.UserAccount;
+import api.model.CommercialApplication;
 import cat.CatalogueItem;
 import cat.StockLowLevel;
 import ord.Invoice;
@@ -115,6 +116,18 @@ public class DatabaseManager {
                             quantity INTEGER NOT NULL,
                             unit_cost REAL NOT NULL,
                             amount REAL NOT NULL
+                        );
+                    """);
+
+            st.execute("""
+                        CREATE TABLE IF NOT EXISTS commercial_applications (
+                            application_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            company_name TEXT NOT NULL,
+                            reg_num INTEGER NOT NULL,
+                            email TEXT NOT NULL,
+                            phone TEXT NOT NULL,
+                            address TEXT NOT NULL,
+                            director TEXT NOT NULL
                         );
                     """);
         }
@@ -689,6 +702,24 @@ public class DatabaseManager {
             System.out.println("Failed to clear merchant fields: " + e.getMessage());
         }
 
+    }
+
+    public static boolean saveApplication(CommercialApplication application) {
+        String sql = "INSERT INTO commercial_applications (company_name, reg_num, email, phone, address, director) VALUES (?, ?, ?, ?, ?, ?)";
+        try (var pstmt = conn.prepareStatement(sql)){
+            pstmt.setString(1, application.company_name);
+            pstmt.setInt(2, application.reg_num);
+            pstmt.setString(3, application.email);
+            pstmt.setString(4, application.phone);
+            pstmt.setString(5, application.address);
+            pstmt.setString(6, application.director);
+
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

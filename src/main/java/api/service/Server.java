@@ -1,5 +1,6 @@
 package api.service;
 
+import api.model.CommercialApplication;
 import api.model.ItemRequest;
 import api.model.OrderRequest;
 import cat.CatalogueItem;
@@ -105,6 +106,31 @@ public class Server {
                         "total", orderTotal,
                         "status", "Pending"
                 ));
+
+            });
+
+            config.routes.post("/apply", ctx -> {
+
+                CommercialApplication[] applications = ctx.bodyAsClass(CommercialApplication[].class);
+
+                if (applications == null || applications.length == 0) {
+                    ctx.status(400).result("No applications provided");
+                    return;
+                }
+
+                boolean success = true;
+                for (CommercialApplication application : applications) {
+                    if (!DatabaseManager.saveApplication(application)) {
+                        success = false;
+                        break;
+                    }
+                }
+
+                if (success) {
+                    ctx.status(201).result("Applications submitted successfully");
+                } else {
+                    ctx.status(500).result("Error saving applications, please try again");
+                }
 
             });
 
