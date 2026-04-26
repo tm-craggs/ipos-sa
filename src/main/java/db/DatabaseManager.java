@@ -16,11 +16,16 @@ import java.util.Optional;
 public class DatabaseManager {
 
     private static final String URL = "jdbc:sqlite:ipos-sa.db";
+    private static String currentUrl = URL;
     private static Connection conn;
 
     public static void connect() {
         try {
-            conn = DriverManager.getConnection(URL);
+            if (conn != null && !conn.isClosed()) {
+                return;
+            }
+
+            conn = DriverManager.getConnection(currentUrl);
             System.out.println("Connection to SQLite has been established.");
             init();
         } catch (SQLException e) {
@@ -28,13 +33,31 @@ public class DatabaseManager {
         }
     }
 
-    /**
-     * This is the init function. This function is called once the connection has been established. It will check
-     * that the users database has been created, and will create it if not. It also makes sure the director account is
-     * created.
-     *
-     * @throws SQLException
-     */
+    public static void setTestDatabase(String dbFileName) {
+        disconnect();
+        currentUrl = "jdbc:sqlite:" + dbFileName;
+    }
+
+    public static void resetToProductionDatabase() {
+        disconnect();
+        currentUrl = URL;
+    }
+
+    public static void disconnect() {
+        if (conn != null) {
+            try {
+                if (!conn.isClosed()) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Failed to close connection: " + e.getMessage());
+            } finally {
+                conn = null;
+            }
+        }
+    }
+
+
     private static void init() throws SQLException {
 
         // run queries to set up basic tables
@@ -685,6 +708,13 @@ public class DatabaseManager {
 
 
     public static Connection getConnection() {
+        try {
+            if (conn == null || conn.isClosed()) {
+                connect();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get database connection", e);
+        }
         return conn;
     }
 
